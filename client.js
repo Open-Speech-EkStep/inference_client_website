@@ -110,6 +110,10 @@ function startServer() {
     });
     const upload = multer({ storage: multerStorage });
     app.use(upload.single('audio_data'));
+    app.get('/test-stream', (req, res) => {
+        res.render("test_stream", { root: __dirname });
+    });
+    
     app.get("/", function (req, res) {
         res.redirect("/hindi");
     });

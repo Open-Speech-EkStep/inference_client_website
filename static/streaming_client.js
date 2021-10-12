@@ -4,6 +4,8 @@ let defaultSampleRate = 48000, speechEvents, input, processor;
 /** Note: */
 // auto mic close needs to be added.
 // check for socket null in all used places.
+// add default callbacks to avoid errors.
+// Error handling
 
 // state parameters
 let audioData = [];
@@ -14,6 +16,8 @@ let isStreamingOver = false;
 let isSilenceTransmitted = true;
 let localBuffer = null;
 let language = 'en';
+let bufferSize = 16384;
+let isSpeaking = false;
 
 function setStateOnMicStart() {
     isStreaming = true;
@@ -29,6 +33,59 @@ async function getAudioMediaStream(){
     let stream = await navigator.mediaDevices.getUserMedia(constraints);
     return stream;
 }
+
+
+function flattenArray(channelBuffer, recordingLength) {
+    let result = new Float32Array(recordingLength);
+    let offset = 0;
+    for (let i = 0; i < channelBuffer.length; i++) {
+        let buffer = channelBuffer[i];
+        result.set(buffer, offset);
+        offset += buffer.length;
+    }
+    return result;
+}
+
+function writeUTFBytes(view, offset, string) {
+    for (var i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+    }
+}
+
+function generateWavBlob(finalBuffer) {
+    let buffer = new ArrayBuffer(44 + finalBuffer.length * 2);
+    let view = new DataView(buffer);
+
+    // RIFF chunk descriptor
+    writeUTFBytes(view, 0, 'RIFF');
+    view.setUint32(4, 44 + finalBuffer.length * 2, true);
+    writeUTFBytes(view, 8, 'WAVE');
+    // FMT sub-chunk
+    writeUTFBytes(view, 12, 'fmt ');
+    view.setUint32(16, 16, true); // chunkSize
+    view.setUint16(20, 1, true); // wFormatTag
+    view.setUint16(22, 1, true); // wChannels:mono(1 channel) / stereo (2 channels)
+    view.setUint32(24, defaultSampleRate, true); // dwSamplesPerSec
+    view.setUint32(28, defaultSampleRate * 2, true); // dwAvgBytesPerSec
+    view.setUint16(32, 4, true); // wBlockAlign
+    view.setUint16(34, 16, true); // wBitsPerSample
+    // data sub-chunk
+    writeUTFBytes(view, 36, 'data');
+    view.setUint32(40, finalBuffer.length * 2, true);
+
+    // write the PCM samples
+    let index = 44;
+    let volume = 1;
+    for (var i = 0; i < finalBuffer.length; i++) {
+        view.setInt16(index, finalBuffer[i] * (0x7FFF * volume), true);
+        index += 2;
+    }
+
+    // our final blob
+    let blob = new Blob([view], { type: 'audio/wav' });
+    return blob;
+}
+
 
 function setSilenceDetector(audioStream, context) {
     let options = { audioContext: context };
@@ -153,7 +210,7 @@ async function startStreaming(responseCallback){
     });
 }
 
-function stopStreaming(callback){
+function stopStreaming(callback = function(){}){
     // revoke access to media library
     // if needed, disable socket
     // disable silence detector
@@ -178,6 +235,7 @@ function stopStreaming(callback){
         return;
     }
     callback(blob);
+    disconnect();
 }
 
 function connect(socketURL, transcription_language, onSuccess, onError){
@@ -203,8 +261,7 @@ function connect(socketURL, transcription_language, onSuccess, onError){
     });
 
     socket.on('disconnect', function () {
-        if(ENABLE_LOGS === true)
-            console.log("disconnected");
+        console.log("disconnected");
     })
     socket.on('terminate', function () {
         onSuccess("Terminate", userId);
