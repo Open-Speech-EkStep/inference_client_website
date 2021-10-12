@@ -26,7 +26,8 @@ StreamingClient:
 
     ** Methods: **
     -> connect(socket_url) returns Promise throws MicNotEnabledException
-    -> startStreaming() returns Boolean throws Exception 
+    -> disconnect()
+    -> startStreaming(language) returns Boolean throws Exception 
         take stream -> enable silence detector -> send to client periodically
     -> stopStreaming()
 
@@ -38,3 +39,4 @@ StreamingClient:
 Inputs:
     1. socket_url
     2. callback
+    3. language
