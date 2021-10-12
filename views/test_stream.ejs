@@ -25,7 +25,7 @@
     $(document).ready(function () {
         ss.forceBase64 = true;
         let language = 'hi';
-        let socketURL = '/';
+        let socketURL = 'http://35.192.29.24:9008/';
         $('#start_btn').on('click', function() {
             connect(socketURL, language, function(action, id){
                 console.log("Connected", id);
