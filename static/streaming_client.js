@@ -174,7 +174,8 @@ function streamAudioProcess(e) {
 };
 
 
-async function startStreaming(responseCallback){
+
+async function startStreaming(responseCallback = function(){}){
     setStateOnMicStart();
 
     let stream = await getAudioMediaStream();
@@ -238,7 +239,7 @@ function stopStreaming(callback = function(){}){
     disconnect();
 }
 
-function connect(socketURL, transcription_language, onSuccess, onError){
+function connect(socketURL, transcription_language, onSuccess = function(){}, onError = function(){}){
     // establish connection
     // emit connect event
     // listen on connect success

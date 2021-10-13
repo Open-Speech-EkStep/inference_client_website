@@ -12,9 +12,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"
         integrity="sha512-v8ng/uGxkge3d1IJuEo6dJP8JViyvms0cly9pnbfRxT6/31c3dRWxIiwGnMSWwZjHKOuY3EVmijs7k1jz/9bLA=="
         crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io-stream/0.9.1/socket.io-stream.js"
-        integrity="sha512-CIsFvh6QCVJHM5XSBQFm7a3mCErndwx9AugcP+nf/YxUQVVWY14klqk+3IG/qNqDpHg5pYVcZWiMt9SeZTiQnw=="
-        crossorigin="anonymous"></script>
 </head>
 <body>
     <button type="button" id="start_btn">Start</button>
@@ -23,9 +20,8 @@
 </body>
 <script>
     $(document).ready(function () {
-        ss.forceBase64 = true;
-        let language = 'hi';
-        let socketURL = 'http://35.192.29.24:9008/';
+        let language = 'en-IN';
+        let socketURL = 'https://inference.vakyansh.in/';
         $('#start_btn').on('click', function() {
             connect(socketURL, language, function(action, id){
                 console.log("Connected", id);
@@ -35,6 +31,7 @@
                         document.getElementById('output').innerHTML = transcript;
                     })
                 } else {
+                    // post-done
                     console.log("Action", action, id)
                 }
             })
