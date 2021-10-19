@@ -9,8 +9,8 @@
     <script src="hark.bundle.js"></script>
     <script src="streaming_client.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"
-            integrity="sha512-v8ng/uGxkge3d1IJuEo6dJP8JViyvms0cly9pnbfRxT6/31c3dRWxIiwGnMSWwZjHKOuY3EVmijs7k1jz/9bLA=="
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"
+            integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs"
             crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io-stream/0.9.1/socket.io-stream.js"
             integrity="sha512-CIsFvh6QCVJHM5XSBQFm7a3mCErndwx9AugcP+nf/YxUQVVWY14klqk+3IG/qNqDpHg5pYVcZWiMt9SeZTiQnw=="
@@ -26,7 +26,8 @@
         const streaming = new StreamingClient();
         ss.forceBase64 = true;
         let language = 'en-IN';
-        let socketURL = 'http://35.192.29.24:9008/';
+        // let socketURL = 'http://35.192.29.24:9008/';
+        let socketURL = '/';
         $('#start_btn').on('click', function () {
             streaming.connect(socketURL, language, function (action, id) {
                 console.log("Connected", id);
