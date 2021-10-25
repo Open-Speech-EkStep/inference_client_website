@@ -10,8 +10,12 @@ app.use(express.urlencoded({ extended: true }));
 var ss = require('socket.io-stream');
 ss.forceBase64 = true;
 const server = require("http").createServer(app);
-const io = require("socket.io")(server);
-io.set('origins', '*:*');
+const io = require("socket.io")(server, {
+    cors: {
+        origin: "*:*"
+    }
+});
+// io.set('origins', '*:*');
 const path = require("path");
 const fs = require("fs");
 const WaveFile = require('wavefile').WaveFile;
