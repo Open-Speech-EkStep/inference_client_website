@@ -25,7 +25,7 @@ class GrpcClient {
     }
 
     #getGrpcIp = () => {
-        let language = this.language.toLowerCase();
+        let language = this.language;
         let grpc_ip = "localhost:55102";
         for (let ip in ip_language_map) {
             if (ip_language_map[ip].includes(language)) {
