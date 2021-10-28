@@ -12,8 +12,9 @@ ss.forceBase64 = true;
 const server = require("http").createServer(app);
 const io = require("socket.io")(server, {
     cors: {
-        origin: "*:*"
-    }
+        origin: "*"
+    },
+    allowEIO: true
 });
 // io.set('origins', '*:*');
 const path = require("path");
