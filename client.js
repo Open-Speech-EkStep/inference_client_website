@@ -10,7 +10,12 @@ app.use(express.urlencoded({ extended: true }));
 var ss = require('socket.io-stream');
 ss.forceBase64 = true;
 const server = require("http").createServer(app);
-const io = require("socket.io")(server);
+const io = require("socket.io")(server, {
+    cors: {
+        origin: "*:*"
+    }
+});
+// io.set('origins', '*:*');
 const path = require("path");
 const fs = require("fs");
 const WaveFile = require('wavefile').WaveFile;
@@ -111,6 +116,10 @@ function startServer() {
     });
     const upload = multer({ storage: multerStorage });
     app.use(upload.single('audio_data'));
+    app.get('/test-stream', (req, res) => {
+        res.render("test_stream", { root: __dirname });
+    });
+    
     app.get("/", function (req, res) {
         res.redirect("/hindi");
     });
