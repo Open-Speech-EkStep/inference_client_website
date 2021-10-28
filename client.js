@@ -15,6 +15,7 @@ const path = require("path");
 const fs = require("fs");
 const WaveFile = require('wavefile').WaveFile;
 const { addFeedback, getFeedback } = require('./dbOperations');
+const {convert_shreedev_to_unicode, convert_krutidev_to_unicode, convert_aakruti_to_unicode} = require('./text_encoding_converters');
 app.use(express.static(path.join(__dirname, "static")));
 
 const MAX_SOCKET_CONNECTIONS = process.env.MAX_CONNECTIONS || 80;
@@ -118,6 +119,38 @@ function startServer() {
         res.sendFile("views/feedback.html", { root: __dirname });
     });
 
+    app.get("/encode-text", (req, res) => {
+        const { text, type } = req.query;
+        console.log(text, type, "GOT")
+        try{
+            if(text){
+                if(type){
+                    let input_type = type.toLowerCase();
+                    let result = "";
+                    if(input_type === "shreedev"){
+                        result = convert_shreedev_to_unicode(text);
+                    } else if (input_type === "krutidev"){
+                        result = convert_krutidev_to_unicode(text);
+	                } else if (input_type === "aakruti") {
+			            result = convert_aakruti_to_unicode(text);
+                    } else {
+                        res.status(400).send("Please enter a valid type of encoding for given input")
+                        return;
+                    }
+                    res.json({ "encoded_data": result });
+                } else {
+                    res.status(400).send("Please enter a valid type of encoding for given input")
+                }
+            } else {
+                res.status(400).send("Please provide a text to convert to unicode");
+            }
+        } catch(err){
+            console.log(err);
+            res.sendStatus(400);
+        }
+        console.log("FINISHED WITHOUT PROCESS")
+    });
+
     app.get("/:language", function (req, res) {
         const language = req.params.language;
         if (language_ids.includes(language.toLowerCase())) {
@@ -185,6 +218,7 @@ function startServer() {
     });
 
     app.post("/punctuate", (req, res) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
         const { text, language } = req.body;
         let grpc_ip;// = 'localhost:55102';
         for (let ip in ip_language_map) {
@@ -272,7 +306,7 @@ function startServer() {
     })
 
     app.get("*", (req, res) => {
-        res.sendFile("not-found.html", { root: __dirname });
+        res.render("not-found", { root: __dirname, languages_map: LANGUAGES });
     })
 
     const PORT = 9008;
