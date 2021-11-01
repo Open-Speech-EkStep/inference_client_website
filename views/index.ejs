@@ -638,6 +638,7 @@
                     if(ENABLE_LOGS === true)
                         console.log("end socket called");
                 }
+                punctuateText(transcription_text);
             });
 
             socket.on('abort', function () {
@@ -685,7 +686,6 @@
             // }, 1000);
             $('#audio_sample_id').show();
             enableRating(true);
-            punctuateText(transcription_text);
         }
 
         function stateOnMicStart() {
@@ -1057,7 +1057,9 @@
                     if(ENABLE_LOGS === true)
                         console.log(resp['text']);
                     $('#output-loader-icon').hide();
-                    document.getElementById('output').textContent = resp["text"];
+                    if (resp['text'] !== null && resp['text'] !== undefined && resp['text'] !== 'null') {
+                        document.getElementById('output').textContent = resp["text"];
+                    }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     alert('Failed: ' + textStatus);
