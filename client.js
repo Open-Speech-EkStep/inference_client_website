@@ -230,6 +230,12 @@ function startServer() {
     app.post("/punctuate", (req, res) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         const { text, language } = req.body;
+
+        if (text === null || text === undefined || text.length === 0 || text === "null"){
+            res.json({ "data": "" });
+            return;
+        }
+
         let grpc_ip;// = 'localhost:55102';
         for (let ip in ip_language_map) {
             if (ip_language_map[ip].includes(language)) {
