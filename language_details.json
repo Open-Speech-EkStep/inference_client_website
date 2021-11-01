@@ -7,5 +7,16 @@
     {"id":"nepali", "code": "ne", "name": "Nepali"}, 
     {"id": "kannada", "code": "kn", "name": "Kannada"}, 
     {"id": "gujarati", "code": "gu", "name": "Gujarati"}, 
-    {"id": "telugu", "code": "te", "name": "Telugu"} 
+    {"id": "telugu", "code": "te", "name": "Telugu"},
+    {"id": "marathi", "code": "mr", "name": "Marathi"},
+    {"id": "odia", "code": "or", "name": "Odia"},
+    {"id": "sanskrit", "code": "sa", "name": "Sanskrit"},
+    {"id": "maithili", "code": "mai", "name": "Maithili"},
+    {"id": "urdu", "code": "ur", "name": "Urdu"},
+    {"id": "punjabi", "code": "pa", "name": "Punjabi"},
+    {"id": "dogri", "code": "doi", "name": "Dogri"},
+    {"id": "bhojpuri", "code": "bo", "name": "Bhojpuri"},
+    {"id": "rajasthani", "code": "raj", "name": "Rajasthani"},
+    {"id": "malayalam", "code": "mal", "name": "Malayalam"},
+    {"id": "assamese", "code": "asm", "name": "Assamese"}
 ]
