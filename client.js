@@ -232,7 +232,7 @@ function startServer() {
         const { text, language } = req.body;
 
         if (text === null || text === undefined || text.length === 0 || text === "null"){
-            res.json({ "data": "" });
+            res.json({ "data": {"text": ""} });
             return;
         }
 
