@@ -1,6 +1,6 @@
 const { addFeedback, getFeedback } = require('./../dbOperations');
 const { uploadFile } = require('./../uploader');
-const GrpcClient = require('./../grpc_client');
+const GrpcClient = require('./../proxy/grpc_client');
 const fs = require("fs");
 const multer = require('multer');
 

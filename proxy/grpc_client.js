@@ -1,11 +1,11 @@
-const ip_language_map = require("./ip_language_map.json");
+const ip_language_map = require("../ip_language_map.json");
 const grpc = require("grpc");
 grpc.max_send_message_length = 50 * 1024 * 1024;
 // grpc.max_receive_message_length = 50 * 1024 * 1024;
 
 const PROTO_PATH =
     __dirname +
-    (process.env.PROTO_PATH || "/audio_to_text.proto");
+    (process.env.PROTO_PATH || "./../audio_to_text.proto");
 const protoLoader = require("@grpc/proto-loader");
 
 let packageDefinition = protoLoader.loadSync(PROTO_PATH, {

@@ -1,5 +1,5 @@
-var ss = require('socket.io-stream');
-ss.forceBase64 = true;
+// var ss = require('socket.io-stream');
+// ss.forceBase64 = true;
 const MAX_SOCKET_CONNECTIONS = process.env.MAX_CONNECTIONS || 80;
 const GrpcClient = require('./grpc_client');
 const idDict = {};
