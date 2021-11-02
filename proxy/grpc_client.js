@@ -34,8 +34,8 @@ class GrpcClient {
         }
         return grpc_ip;
     }
-    
-    #getGrpcClient() {
+
+    #getGrpcClient = () => {
         let grpc_ip = this.#getGrpcIp();
         let grpc_client = new proto.Recognize(
             grpc_ip,
