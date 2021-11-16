@@ -19,14 +19,24 @@ const io = require("socket.io")(server, {
 // io.set('origins', '*:*');
 const path = require("path");
 const fs = require("fs");
-const WaveFile = require('wavefile').WaveFile;
 const { addFeedback, getFeedback } = require('./dbOperations');
 const {convert_shreedev_to_unicode, convert_krutidev_to_unicode, convert_aakruti_to_unicode} = require('./text_encoding_converters');
 app.use(express.static(path.join(__dirname, "static")));
 
 const MAX_SOCKET_CONNECTIONS = process.env.MAX_CONNECTIONS || 80;
 
-const ip_language_map = require("./ip_language_map.json");
+const ip_language_maps = require("./ip_language_map.json");
+let ip_language_map = {};
+for(let [ip, config] of Object.entries(ip_language_maps)){
+    ip_language_map[ip] = config["languages"];
+}
+let languageConnectionCountMap = {};
+for(let [ip, config] of Object.entries(ip_language_maps)){
+    const languages = config["languages"];
+    for (let index in languages){
+        languageConnectionCountMap[languages[index]] = config["maxConnectionCount"];
+    }
+}
 const LANGUAGES = require("./language_details.json");
 const language_ids = LANGUAGES.map(language=> language.id)
 
@@ -333,8 +343,9 @@ function startServer() {
 function main() {
     io.on("connection", (socket) => {
         let grpc_ip; //= 'localhost:55102';
+        let currentLanguage = socket.handshake.query.language;
         for (let ip in ip_language_map) {
-            if (ip_language_map[ip].includes(socket.handshake.query.language)) {
+            if (ip_language_map[ip].includes(currentLanguage)) {
                 grpc_ip = ip;
             }
         }
@@ -352,14 +363,14 @@ function main() {
         });
 
         const numUsers = socket.client.conn.server.clientsCount;
-        console.log("Number of users => ", numUsers);
-        if (numUsers > MAX_SOCKET_CONNECTIONS) {
+        console.log("Number of users => ", numUsers, languageConnectionCountMap[currentLanguage]);
+        if (numUsers > languageConnectionCountMap[currentLanguage]) {
             socket.emit("abort");
             socket.disconnect();
             console.log("CAllled");
             return;
         }
-
+        console.log("Connected=> ", currentLanguage)
         socket.on('connect_mic_stream', () => {
             onUserConnected(socket, grpc_client);
             socket.on("mic_data", function (chunk, language, speaking, isEnd) {

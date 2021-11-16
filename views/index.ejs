@@ -698,6 +698,7 @@
 
         function stateOnMicStop() {
             state = "OFF";
+            socket.emit('mic_data', null, current_lang, false, false);
             socket.emit('mic_data', null, current_lang, false, true);
         }
         let stream = null;
