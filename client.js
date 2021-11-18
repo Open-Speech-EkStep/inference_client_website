@@ -344,30 +344,38 @@ function main() {
     io.on("connection", (socket) => {
         let grpc_ip; //= 'localhost:55102';
         let currentLanguage = socket.handshake.query.language;
+
         for (let ip in ip_language_map) {
             if (ip_language_map[ip].includes(currentLanguage)) {
                 grpc_ip = ip;
             }
         }
-        let grpc_client = new proto.Recognize(
-            grpc_ip,
-            grpc.credentials.createInsecure()
-        );
+        let grpc_client;
+        if(grpc_ip !== undefined){
+            grpc_client = new proto.Recognize(
+                grpc_ip,
+                grpc.credentials.createInsecure()
+            );
+        } else {
+            console.log("Invalid language for ", socket.id)
+        }
+
+        
         socket.on("disconnect", (reason) => {
             if (socket.id in userCalls) {
                 userCalls[socket.id].end();
                 delete userCalls[socket.id];
             }
             console.log(socket.id, "got disconnected", reason);
-            grpc.closeClient(grpc_client);
+            if(grpc_client !== undefined)
+                grpc.closeClient(grpc_client);
         });
 
         const numUsers = socket.client.conn.server.clientsCount;
         console.log("Number of users => ", numUsers, languageConnectionCountMap[currentLanguage]);
-        if (numUsers > languageConnectionCountMap[currentLanguage]) {
+        if (numUsers > languageConnectionCountMap[currentLanguage] || grpc_client === undefined) {
             socket.emit("abort");
             socket.disconnect();
-            console.log("CAllled");
             return;
         }
         console.log("Connected=> ", currentLanguage)
