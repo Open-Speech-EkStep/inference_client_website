@@ -9,14 +9,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const server = require("http").createServer(app);
-// const setProxy = require('./proxy');
+const setProxy = require('./proxy');
 const setRouter = require('./routes');
 
 app.use(express.static(path.join(__dirname, "static")));
 app.set('view engine', 'ejs');
 
 
-// setProxy(server);
+setProxy(server);
 
 setRouter(app)
 
