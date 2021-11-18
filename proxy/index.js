@@ -3,7 +3,7 @@ const {initializeSocketServer, listenToSocketConnections} = require('./socket_se
 
 const setProxy = (server) => {
     const io = initializeSocketServer(server);
-    listenToSocketConnections(io);
+    listenToSocketConnections(io);    
 };
 
 module.exports = setProxy;

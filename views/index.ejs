@@ -610,7 +610,7 @@
         }
 
         function connectSocket(startMic) {
-            socket = io('localhost:9009/', {autoConnect: false , query: `language=${current_lang}`});
+            socket = io('/', {autoConnect: false , query: `language=${current_lang}`});
             socket.connect();
             socket.on('connect', function () {
                 userId = socket.id;
@@ -633,7 +633,9 @@
                     console.log("disconnected");
             })
             socket.on('terminate', function () {
-                if (socket_close_timeout === null) {
+                console.log("terminate called")
+                if (socket !== null && socket.connected) {
+                    console.log("END socket called")
                     endSocket();
                     if(ENABLE_LOGS === true)
                         console.log("end socket called");
