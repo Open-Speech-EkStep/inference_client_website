@@ -1047,7 +1047,7 @@
             formData.append("enableITN", true);
             $.ajax({
                 type: 'POST',
-                url: `http://test-model-api.vakyansh.in/asr/v1/punctuate/${current_lang}`,
+                url: `https://inference.vakyansh.in/punctuate`,
                 data: formData,
                 contentType: false,
                 processData: false,
