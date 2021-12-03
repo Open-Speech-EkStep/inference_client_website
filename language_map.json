@@ -1,20 +1,20 @@
 {
     "35.192.29.24:55102": {"languages":[
         "ta",
-        "bo",
+        "bho",
         "bn",
-        "en-IN-BIO",
+        "en_bio",
         "ne",
         "kn"
     ], "maxConnectionCount": 50},
     "35.232.162.125:55102": {"languages":[
         "raj",
-        "mal",
+        "ml",
         "or",
         "sa",
         "mai",
         "ur",
-        "asm",
+        "as",
         "doi"
     ], "maxConnectionCount": 50},
     "34.72.59.101:55102": {"languages":[
@@ -26,6 +26,6 @@
     ], "maxConnectionCount": 50},
     "35.225.39.113:55102": {"languages":[
 	    "hi",
-	    "en-IN"
+	    "en"
     ], "maxConnectionCount": 50}
 }

@@ -1,6 +1,6 @@
 [
-    {"id": "indian-english", "code": "en-IN", "name": "English (IN)"},
-    {"id": "indian-english-bio", "code": "en-IN-BIO", "name":"BIO English (IN)"},
+    {"id": "indian-english", "code": "en", "name": "English (IN)"},
+    {"id": "indian-english-bio", "code": "en_bio", "name":"BIO English (IN)"},
     {"id":"hindi", "code": "hi", "name":"Hindi"},
     {"id": "tamil", "code": "ta", "name": "Tamil"}, 
     {"id": "bengali", "code": "bn", "name": "Bengali"}, 
@@ -15,9 +15,8 @@
     {"id": "urdu", "code": "ur", "name": "Urdu"},
     {"id": "punjabi", "code": "pa", "name": "Punjabi"},
     {"id": "dogri", "code": "doi", "name": "Dogri"},
-    {"id": "bhojpuri", "code": "bo", "name": "Bhojpuri"},
+    {"id": "bhojpuri", "code": "bho", "name": "Bhojpuri"},
     {"id": "rajasthani", "code": "raj", "name": "Rajasthani"},
-    {"id": "malayalam", "code": "mal", "name": "Malayalam"},
-    {"id": "assamese", "code": "asm", "name": "Assamese"},
-    {"id": "english_test", "code": "en-test", "name": "English test"}
+    {"id": "malayalam", "code": "ml", "name": "Malayalam"},
+    {"id": "assamese", "code": "as", "name": "Assamese"}
 ]

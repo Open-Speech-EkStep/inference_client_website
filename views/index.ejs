@@ -610,7 +610,7 @@
         }
 
         function connectSocket(startMic) {
-            socket = io('/', {autoConnect: false , query: `language=${current_lang}`});
+            socket = io('34.67.53.180', {autoConnect: false , query: `language=${current_lang}`});
             socket.connect();
             socket.on('connect', function () {
                 userId = socket.id;
@@ -1044,9 +1044,10 @@
             let formData = new FormData();
             formData.append("text", textToPunctuate);
             formData.append("language", current_lang);
+            formData.append("enableITN", true);
             $.ajax({
                 type: 'POST',
-                url: '/punctuate',
+                url: `https://inference.vakyansh.in/punctuate`,
                 data: formData,
                 contentType: false,
                 processData: false,
