@@ -7,7 +7,7 @@ function setUIRoutes(app){
     });
 
     app.get("/feedback", function (req, res) {
-        res.sendFile("views/feedback.html", { root: __dirname });
+        res.render("feedback", { root: __dirname });
     });
 
     app.get("/:language", function (req, res) {
@@ -24,7 +24,7 @@ function setUIRoutes(app){
     });
 
     app.get("*", (req, res) => {
-        res.sendFile("not-found.html", { root: __dirname });
+        res.render("not-found", { root: __dirname, languages_map: LANGUAGES });
     })
 }
 

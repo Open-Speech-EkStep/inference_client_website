@@ -3,7 +3,7 @@ const { uploadFile } = require('./../uploader');
 const GrpcClient = require('./../proxy/grpc_client');
 const fs = require("fs");
 const multer = require('multer');
-
+const axios = require('axios');
 
 function setApiRoutes(app) {
 
@@ -31,6 +31,17 @@ function setApiRoutes(app) {
     const upload = multer({ storage: multerStorage });
     app.use(upload.single('audio_data'));
 
+    app.post("/alt/asr/:language", async function (req, res) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        const language = req.params.language;
+        try{
+            const resp = await axios.post("http://aws-model-api.vakyansh.in/asr/v1/recognize/"+language, req.body);
+            res.json(resp.data);
+        }catch(err){
+            console.log(err);
+            res.sendStatus(400);
+        }
+    });
 
     app.post("/batch-service", function (req, res) {
         const file = req.file;
@@ -68,11 +79,22 @@ function setApiRoutes(app) {
     app.post("/punctuate", (req, res) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         const { text, language } = req.body;
-        let grpcClient = new GrpcClient(language);
+        let lang = language;
+        if (language === "en") {
+            lang = "en-IN"
+        } else if (language === "bho") {
+            lang = "bo"
+        } else if (language === "ml") {
+            lang = "mal";
+        } else if (language === "as") {
+            lang = "asm";
+        }
+
+        let grpcClient = new GrpcClient(lang);
         grpcClient.connect()
         const msg = {
             text: text,
-            language: language,
+            language: lang,
             enabledItn: true
         }
         grpcClient.getPunctuation(msg).then(response => {
