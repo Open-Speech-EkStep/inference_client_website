@@ -21,7 +21,7 @@ const corsOptions = {
 }
 app.use(cors(corsOptions));
 
-setProxy(server);
+// setProxy(server);
 
 setRouter(app)
 

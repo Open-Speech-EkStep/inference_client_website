@@ -34,77 +34,69 @@ function setApiRoutes(app) {
     app.post("/alt/asr/:language", async function (req, res) {
         res.setHeader('Access-Control-Allow-Origin', '*');
         const language = req.params.language;
-        try{
-            const resp = await axios.post("http://aws-model-api.vakyansh.in/asr/v1/recognize/"+language, req.body);
+        try {
+            const resp = await axios.post("https://meity-dev-asr.ulcacontrib.org/asr/v1/recognize/" + language, req.body);
             res.json(resp.data);
-        }catch(err){
+        } catch (err) {
             console.log(err);
             res.sendStatus(400);
         }
     });
 
-    app.post("/batch-service", function (req, res) {
+    app.post("/batch-service", async function (req, res) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
         const file = req.file;
-        const { language, user } = req.body;
+        const { language } = req.body;
         let data = fs.readFileSync(file.path);
-
-        let grpcClient = new GrpcClient(language);
-        grpcClient.connect()
-
-        const msg = {
-            audio: data,
-            user: user,
-            language: language,
-            filename: file.filename
-        };
-
-        grpcClient.getSrtResponse(msg).then(response => {
-            res.json({ "data": response });
-        }).catch(error => {
-            console.log(error);
+        let dataBase64 = data.toString('base64');
+        const requestBody = {};
+        // requestBody["config"] = { "transcriptionFormat": { "value": "srt" }, audioFormat: "wav" }
+        requestBody["audio"] = [{ "audioContent": dataBase64 }]
+        try {
+            const resp = await axios.post("https://meity-dev-asr.ulcacontrib.org/asr/v1/recognize/" + language, requestBody);
+            console.log(resp.data);
+            res.json({ "data": {"srt" : resp.data["output"][0]["source"] } });
+        } catch (err) {
+            console.log(err);
             res.sendStatus(500);
-        }).finally(() => {
-            grpcClient.disconnect()
-            fs.unlink(file.path, function (err) {
-                if (err) {
-                    console.log(`File ${file.path} not deleted!`);
-                    console.log(err);
-                } else {
-                    console.log(`File ${file.path} deleted!`)
-                }
-            });
-        })
+        }
+        fs.unlink(file.path, function (err) {
+            if (err) {
+                console.log(`File ${file.path} not deleted!`);
+                console.log(err);
+            } else {
+                console.log(`File ${file.path} deleted!`)
+            }
+        });
     });
 
-    app.post("/punctuate", (req, res) => {
+    app.post("/v1/punctuate/:language", async (req, res) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        const { text, enableITN } = req.body;
+        let language = req.params.language;
+        try{
+            const baseUrl = 'https://meity-dev-asr.ulcacontrib.org';
+            const requestBody = { "text": text, "enableITN": enableITN === true ? true : false  };
+            const resp = await axios.post(`${baseUrl}/asr/v1/punctuate/${language}`, requestBody);
+            res.json({ "data": resp.data });
+        } catch(err){
+            console.log(err)
+            res.sendStatus(500);
+        }
+    })
+
+    app.post("/punctuate", async (req, res) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         const { text, language } = req.body;
-        let lang = language;
-        if (language === "en") {
-            lang = "en-IN"
-        } else if (language === "bho") {
-            lang = "bo"
-        } else if (language === "ml") {
-            lang = "mal";
-        } else if (language === "as") {
-            lang = "asm";
-        }
-
-        let grpcClient = new GrpcClient(lang);
-        grpcClient.connect()
-        const msg = {
-            text: text,
-            language: lang,
-            enabledItn: true
-        }
-        grpcClient.getPunctuation(msg).then(response => {
-            res.json({ "data": response });
-        }).catch(error => {
-            console.log(error);
+        try{
+            const baseUrl = 'https://meity-dev-asr.ulcacontrib.org';
+            const requestBody = { "text": text, "enableITN": true  };
+            const resp = await axios.post(`${baseUrl}/asr/v1/punctuate/${language}`, requestBody);
+            res.json({ "data": resp.data });
+        } catch(err){
+            console.log(err)
             res.sendStatus(500);
-        }).finally(() => {
-            grpcClient.disconnect()
-        })
+        }
     })
 
     app.post("/api/feedback", function (req, res) {

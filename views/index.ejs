@@ -610,7 +610,7 @@
         }
 
         function connectSocket(startMic) {
-            socket = io('34.67.53.180', {autoConnect: false , query: `language=${current_lang}`});
+            socket = io('/', {autoConnect: false , query: `language=${current_lang}`});
             socket.connect();
             socket.on('connect', function () {
                 userId = socket.id;
@@ -1011,7 +1011,7 @@
             let filename = blob.name;
             $.ajax({
                 type: 'POST',
-                url: '/batch-service',
+                url: `/batch-service`,
                 data: formData,
                 contentType: false,
                 processData: false,
@@ -1043,11 +1043,10 @@
         function punctuateText(textToPunctuate) {
             let formData = new FormData();
             formData.append("text", textToPunctuate);
-            formData.append("language", current_lang);
             formData.append("enableITN", true);
             $.ajax({
                 type: 'POST',
-                url: `https://inference.vakyansh.in/punctuate`,
+                url: `/v1/punctuate/${current_lang}`,
                 data: formData,
                 contentType: false,
                 processData: false,
