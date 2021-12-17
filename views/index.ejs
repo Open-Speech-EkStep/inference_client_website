@@ -1104,7 +1104,10 @@
         */
 
         function saveRating(bodyParams, enableRating) {
-            const { recordedBlob, rating, feedback, device, browser, transcription_text, transcription_language, userId } = bodyParams;
+            const { recordedBlob, rating, feedback, device, browser, transcription_text, transcription_language, userId,username,
+                    age,
+                    gender,
+                    feedbackCategories } = bodyParams;
             const formData = new FormData();
             formData.append('audio_data', recordedBlob);
             formData.append('rating', rating);
@@ -1114,6 +1117,10 @@
             formData.append('text', transcription_text);
             formData.append('language', transcription_language);
             formData.append('user_id', userId);
+            formData.append('username', username);
+            formData.append('age', age);
+            formData.append('gender', gender);
+            formData.append('feedbackCategories', feedbackCategories);
 
             $.ajax({
                 type: 'POST',
