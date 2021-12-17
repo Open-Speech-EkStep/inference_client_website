@@ -135,6 +135,15 @@
             text-align: center;
         }
 
+        #feedback-free-text::placeholder{
+            text-align: left;
+        }
+
+        #feedback-dropdown-button.disabled {
+            background-color: #e9ecef;
+            opacity: 1;
+        }
+
         #mic_image:hover {
             border-radius: 70%;
             box-shadow: 0 0 14px 8px rgba(33, 33, 33, .2);
@@ -142,8 +151,25 @@
 
         .row {
             padding: 15px;
+        }
+        .outerRow {
             margin: 15px;
             border: 1px black solid;
+        }
+
+        .feedBack-limit{
+            font-family: Roboto,'Helvetica Neue', Helvetica, Arial, sans-serif;;
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 18px;
+            display: flex;
+            align-items: left;
+            color: #0f2749;
+            opacity: 0.63;
+        }
+
+        .feedBack-limit>span{
+            opacity: 0.63
         }
 
         #like,
@@ -166,6 +192,41 @@
 
         #status_text {
             margin-top: 10px;
+        }
+
+        #tags{
+            align-self: center;
+            display: flex;
+            flex-wrap: wrap;
+            height:auto;
+        }
+
+        .tag{
+            border-radius: 24px;
+            border: 1px solid #ced4da;
+            padding: 5px 10px;
+            font-size: 12px;
+            color: #495057;
+            margin: 5px 10px;
+        }
+
+        .asterisk{
+            color: red;
+        }
+
+        .requiredField{
+            box-shadow: inset 0 0 8px rgb(15 39 73 / 50%);
+            border: 2px solid #212529
+        }
+
+        @media (min-width: 992px) {
+            .width-100{
+                width:100%
+            }
+        }
+
+        #feedback-dropdown .dropdown-item{
+            white-space: normal;
         }
 
         #loader {
@@ -219,7 +280,7 @@
     <%- include('./components/header'); %>
     <center>
         <div class="container">
-            <div class="row" style="border: 0px;">
+            <div class="row outerRow" style="border: 0px;">
                 <div class="col-sm-12">
                     <center>
                         <h4 id="title-text">Speech Recognition Models</h4>
@@ -228,7 +289,7 @@
                     </center>
                 </div>
             </div>
-            <div class="row">
+            <div class="row outerRow">
                 <div class="col-sm-12">
                     <br />
                     <div style="min-height:100px;min-width:100px;">
@@ -262,10 +323,10 @@
                     </p>
                 </div>
             </div>
-            <div class="row">
+            <div class="row outerRow" id="rating-row">
                 <div class="col-sm-12">
                     <center>
-                        <h5>Rate us here</h5>
+                        <h5>Rate us here <span class="asterisk">*</span></h5>
                     </center>
                 </div>
                 <div class="col-sm-12">
@@ -282,26 +343,92 @@
                         <label class="star star-1" for="star-1"></label>
                     </div>
                 </div>
-                <div class="col-sm-12">
-                    <select class="form-select" id="feedback-dropdown">
-                        <option value="" selected>Provide Feedback</option>
-                        <option value="looks_perfect">Looks perfect</option>
-                        <option value="few_words_missing">Few words missing</option>
-                        <option value="few_words_misspelled">Few words misspelled</option>
-                    </select>
+                <div class="row width-100">
+                    <div class="col-sm-12 col-lg-4">
+                        <div class="form-group">
+                        <label for="username" class="form-label mt-2">
+                            Name
+                            <span class="asterisk">*</span>
+                        </label> 
+                        <input class="form-control font-weight-normal" maxlength="12" id="username" placeholder="Enter Username"  value="">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-lg-4">
+                        <div class="form-group"><label for="age" class="form-label mt-2">
+                            Age
+                            <span class="asterisk">*</span>
+                        </label> <input class="form-control font-weight-normal" id="age"  type="number" min="1" placeholder="Enter Age" disabled value="">
+                    </div>
+                    </div>
+                    <div class="col-sm-12 col-lg-4">
+                        <div class="form-group"><label for="age" class="form-label mt-2">
+                            Gender
+                            <span class="asterisk">*</span>
+                        </label>
+                        <select id="gender-list" name="Gender" class="form-control font-weight-normal text-lg-center" disabled value="">
+                            <option value="" select>Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Others">Others</option>
+                        </select>
+                        </div>
+                    </div>
+                </div>
+
+                <br/>
+                <br/>
+
+                <div class="row width-100">
+                    <label class="col-12 text-left">Please select your feedback categories <span class="asterisk">*</span></label>
+                    <div class="col-sm-12 text-left col-lg-4">
+                        <div class="dropdown-toggle form-control font-weight-normal text-center" id="feedback-dropdown-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Select Categories
+                        </div>
+                        <div class="dropdown-menu dropdown-menu-left" id="feedback-dropdown">
+                            <label class="dropdown-item"><input  type="checkbox" id="spelling-mistakes-feedBack" value="Spelling mistakes"/> Spelling mistakes </input></label>
+                            <label class="dropdown-item"><input  type="checkbox" id="words-dropping-feedBack" value="Words dropping"/> Words dropping</label>
+                            <label class="dropdown-item"><input  type="checkbox" id="numbers-incorrect-feedBack" value="Numbers not correct"/> Numbers not correct </label>
+                            <label class="dropdown-item"><input  type="checkbox" id="punctuation-incorrect-feedBack" value="Punctuation is incorrect"/> Punctuation is incorrect </label>
+                            <label class="dropdown-item"><input  type="checkbox" id="nouns-incorrect-feedBack" value="Proper nouns incorrect like name, place"/> Proper nouns incorrect like name, place </label>
+                            <label class="dropdown-item"><input  type="checkbox" id="no-output-feedBack" value="No output"/> No output </label>
+                            <label class="dropdown-item"><input  type="checkbox" id="words-repeated-feedBack" value="Words repeated a lot"/> Words repeated a lot </label>
+                            <label class="dropdown-item"><input  type="checkbox" id="unspoken-words-feedBack" value="Unspoken words in text"/> Unspoken words in text </label>
+                            <label class="dropdown-item"><input  type="checkbox" id="totally-wrong-feedBack" value="Totally wrong"/> Totally wrong  </label>
+                            <label class="dropdown-item"><input  type="checkbox" id="perfect-feedBack" value="Looks perfect"/> Looks perfect </label>
+                            <label class="dropdown-item"><input  type="checkbox" id="other-feedBack" value="Others"/> Others </label>
+                        </div>
+                    </div>
+                    <div id="tags" class="col-sm-12 text-left col-lg-8">
+                    </div>
+             </div>
+
+                      
+                      <br />
+                      <br />
+                      <div class="text-left col-sm-12">
+                        <label class="form-label text-left" for="feedback">Share your feedback below: <span class="text-muted" id="feedback-free-text-label">(Optional)</span></label>
+                        <textarea rows="3" maxlength="500" placeholder="Type here..." name="feedback" id="feedback-free-text" class="form-control" disabled value=""></textarea>
+                        <div class="feedBack-limit justify-content-end mb-4">
+                            <span class="align-middle">
+                                Only 500 characters allowed
+                            </span>
+                        </div>
+                      </div>
                     <br />
                     <br />
+                    <div class="col-sm-12">
                     <button id="Submit" class="btn btn-secondary" type="button" name="SUBMITBUTTON">
-                        Submit Rating
+                        Submit
                     </button>
                     <center>
                         <div id="loader" style='display: none;'></div>
                     </center>
                     <br />
-                    <p id="rating-note">(Rating will be enabled only after you speak in the microphone)</p>
+                    <p id="rating-note">(All the fields will be enabled only after you speak in the microphone)</p>
+                    <p id="submit-note" class="asterisk">(Submit will be enabled only after you fill all the * fields)</p>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
+            <div class="row outerRow">
                 <div class="col-sm-12">
                     <center>
                         <strong class="disclaimer">Note:</strong>
@@ -332,7 +459,7 @@
                     <!-- <textarea id="file_upload_response" rows="6" class="mt-2" readonly placeholder="Output"></textarea> -->
                 <!-- </div> -->
             </div>
-            <div class="row">
+            <div class="row outerRow">
                 <center>
                     <h4>Vakyansh: The Home of Speech Recognition Essentials for Indian Languages</h4><br />
                     <p>Vakyansh aims to host the key essentials of Automatic Speech Recognition
@@ -566,6 +693,10 @@
             if (!flag) {
                 $('select').prop("disabled", true)
                 $('#Submit').attr("disabled", true);
+                $('#username').prop("disabled", true);
+                $('#age').prop("disabled", true);
+                $('#feedback-free-text').prop("disabled", true);
+                $('#feedback-dropdown-button').addClass('disabled');
             }
 
             $('input.star').css({ 'pointer-events': value })
@@ -574,6 +705,11 @@
             $('#dislike').css({ 'pointer-events': value })
             if (flag) {
                 $('#rating-note').hide();
+                $('select').prop("disabled", false)
+                $('#username').attr("disabled", false);
+                $('#age').attr("disabled", false);
+                $('#feedback-free-text').attr("disabled", false);
+                $('#feedback-dropdown-button').removeClass('disabled');
             } else {
                 $('#rating-note').show();
             }
@@ -1088,7 +1224,12 @@
                     titleLanguage = "Kannada (With LM)";
                 document.getElementById("title-text").innerHTML = titleLanguage + " Speech Recognition Model"
             }
-
+            const username = localStorage.getItem('username');
+            const age = localStorage.getItem('age');
+            const gender = localStorage.getItem('gender');
+            $('#username').val(username)
+            $('#age').val(age)
+            $('#gender-list').val(gender)
             device = getDeviceInfo();
             browser = getBrowserInfo();
             $('#Submit').on('click', function () {
@@ -1097,7 +1238,20 @@
                 $(this).addClass('active');
                 stopRecording();
                 rating = $('[name="star"]:checked').val();
-                feedback = $("#feedback-dropdown").val();
+                const username = $('#username').val().trim();
+                feedback = $("#feedback-free-text").val().trim();
+                const age = Number($('#age').val());
+                const gender = $('#gender-list').val().trim();
+                localStorage.setItem('username',username);
+                localStorage.setItem('age',age);
+                localStorage.setItem('gender',gender);
+                const feedbackCategories = [];
+
+                const $selectedFeedbackCategories = $('#feedback-dropdown').find('[checked=checked]');
+                $selectedFeedbackCategories.each((i,div)=>{
+                    feedbackCategories.push(div.value)
+                })
+
                 enableRating(false)
                 saveRating({
                     recordedBlob,
@@ -1107,7 +1261,11 @@
                     browser,
                     transcription_text,
                     transcription_language,
-                    userId
+                    userId,
+                    username,
+                    age,
+                    gender,
+                    feedbackCategories
                 }, enableRating);
             });
             enableRating(false);
@@ -1115,15 +1273,70 @@
                 if(ENABLE_LOGS === true)
                     console.log($(this).val())
                 if ($(this).val() >= 1) {
-                    $('select').prop("disabled", false)
-                    $('#Submit').attr("disabled", false)
+                    $(this).addClass('active')
+                    // $('select').prop("disabled", false)
+                    // $('#Submit').attr("disabled", false)
                 } else {
-                    $('select').prop("disabled", true)
-                    $('#Submit').attr("disabled", true)
+                    $(this).removeClass('active')
+                    // $('select').prop("disabled", true)
+                    // $('#Submit').attr("disabled", true)
                 }
+                enableFeedbackSubmit();
             });
 
+            $('#other-feedBack').on('click', function (e) {
+                if(e.target.checked){
+                    $('#feedback-free-text').addClass('requiredField');
+                    $('#feedback-free-text-label').addClass('asterisk');
+                    $('#feedback-free-text-label').removeClass('text-muted');
+                    $('#feedback-free-text-label').html('*');
+                } else {
+                    $('#feedback-free-text').removeClass('requiredField');
+                    $('#feedback-free-text-label').removeClass('asterisk');
+                    $('#feedback-free-text-label').addClass('text-muted');
+                    $('#feedback-free-text-label').html('(Optional)'); 
+                }
+            })
 
+            $('#feedback-dropdown input[type=checkbox]').click(function (e) {
+                if(e.target.checked){
+                    $(`#${e.target.id}`).attr('checked', true);
+                    $('#tags').append(`<div id=${e.target.id}-tag class="tag">${e.target.value}</div>`);
+                } else {
+                    $(`#${e.target.id}`).attr('checked', false);
+                    $(`#${e.target.id}-tag`).remove();
+                }
+                enableFeedbackSubmit();
+            })
+
+            const enableFeedbackSubmit = function(){
+                const ratingCount = $('.stars').find('.star.active').length;
+                const username = $('#username').val().trim();
+                const age = Number($('#age').val());
+                const gender = $('#gender-list').val().trim();
+                const selectedFeedbackCategoriesCount = $('#tags').children().length;
+                const isRequiredFreeText = $("#other-feedBack").attr('checked') == 'checked' ;
+                const freeText = $(`#feedback-free-text`).val().trim();
+                const isValidText = isRequiredFreeText ?  freeText.length > 0 : true ;
+                const isAllRequiredFieldFilled = username.length > 0  && gender.length > 0 && age > 0 && isValidText && selectedFeedbackCategoriesCount > 0 && ratingCount > 0;
+
+                if(isAllRequiredFieldFilled){
+                    $('#Submit').attr("disabled",false);
+                    $('#submit-note').hide();
+                } else {
+                    $('#Submit').attr("disabled",true);
+                    $('#submit-note').show();
+                }
+            }
+            $('#gender-list').on('change', (e) => {
+                const selectedGender = e.target.value;
+                $('#gender-list').val(selectedGender)
+                enableFeedbackSubmit();
+            });
+            $('#age').add('#feedback-free-text').add('#username').on('input focus', (e) => {
+                enableFeedbackSubmit();
+            });
+            
         });
     </script>
 </body>
