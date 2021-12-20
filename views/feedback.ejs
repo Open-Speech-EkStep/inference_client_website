@@ -63,6 +63,44 @@
             transform: rotate(360deg);
         }
     }
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 50%;
+        height: 50%;
+    }
+
+    /* The Close Button */
+    .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
 </style>
 
 <body>
@@ -127,10 +165,66 @@
 
         </tbody>
     </table>
+    
+    <div id="userModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <center>
+            <p> User Information </p>
+            <table>
+                <thead>
+                    
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Name:</td>
+                        <td id="modal_username"> Name </td>
+                    </tr>
+                    <tr>
+                        <td>Age:</td>
+                        <td id="modal_age"> Age </td>
+                    </tr>
+                    <tr>
+                        <td>Gender:</td>
+                        <td id="modal_gender"> Gender </td>
+                    </tr>
+                    <tr>
+                        <td>Duration Contributed:</td>
+                        <td id="modal_duration"> Duration </td>
+                    </tr>
+                </tbody>
+            </table>
+          </center>
+        </div>
+      
+      </div>
     <script>
 
         let languagesMap = <%- JSON.stringify(languages_map) %>;
         $(document).ready(function () {
+            let modal = document.getElementById("userModal");
+            function showUserInfo(userName){
+                modal.style.display = "block";
+                fetch(`/api/feedback/user/${userName}`).then(resp=> resp.json()).then(result=>{
+                    $("#modal_username").html(userName);
+                    $("#modal_age").html(result.age);
+                    $("#modal_gender").html(result["gender"]);
+                    $("#modal_duration").html(result["dur"] + " seconds");
+                }).catch(err=>{
+                    console.log(err);
+                })
+            }
+            let closeBtn = document.getElementsByClassName("close")[0];
+            closeBtn.onclick = function() {
+                modal.style.display = "none";
+            }
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
             let dateChosen = false;
             function clearFilters(){
                 $("#device-search").val("");
@@ -167,6 +261,8 @@
             function onDateChosen(start, end) {
                 $('#date_filter').val(start.format('DD-MM-YYYY') + ' - ' + end.format('DD-MM-YYYY'));
             }
+
+
 
             try {
                 // let start = moment().subtract(29, 'days');
@@ -213,7 +309,7 @@
                         "searchable": true,
                         render: function (data, type, row) {
                             if (data) {
-                                return data;
+                                return '<a href="javascript:;" id="username_text_link">'+ data +'</a>';
                             } else {
                                 return "-"
                             }
@@ -325,16 +421,16 @@
                 table.draw();
             });
 
-
-            // $('#feedback-table tbody').on('click', 'button', function () {
-            //     const selectedRow = table.row($(this).parents('tr'));
-            //     const resultElement = selectedRow.node().getElementsByClassName('result')[0]
-            //     const loader = $(selectedRow.node().getElementsByClassName('loader')[0])
-
-            //     let data = selectedRow.data();
+            
 
 
-            // });
+
+            $('#feedback-table tbody').on('click', 'a', function () {
+                const selectedRow = table.row($(this).parents('tr'));
+                let data = selectedRow.data();
+                let userName = data["username"];
+                showUserInfo(userName);
+            });
         });
     </script>
 </body>
