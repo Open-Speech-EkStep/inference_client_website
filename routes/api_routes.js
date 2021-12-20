@@ -135,7 +135,9 @@ function setApiRoutes(app) {
         const deviceFilter = req.query.device_filter || '';
         const browserFilter = req.query.browser_filter || '';
         const dateFilter = req.query.date_filter || '';
-        getFeedback(start, size, ratingFilter, deviceFilter, browserFilter, dateFilter).then(result => {
+        const userNameFilter = req.query.username_filter || '';
+        const languageFilter = req.query.language_filter || '';
+        getFeedback(start, size, ratingFilter, deviceFilter, browserFilter, dateFilter, userNameFilter, languageFilter).then(result => {
             res.json({
                 "draw": req.query.draw | 1,
                 "recordsTotal": result['total'],

@@ -90,7 +90,7 @@ const addFeedback = (user_id, language, audio_path, text, rating, feedback, devi
     ])
 }
 
-const getFeedback = async (offset, size = 10, ratingFilter, deviceFilter, browserFilter, dateFilter) => {
+const getFeedback = async (offset, size = 10, ratingFilter, deviceFilter, browserFilter, dateFilter, userNameFilter, languageFilter) => {
     const totalCountJSON = await getCount(getFeedbackCountQuery, []);
     let totalCount = totalCountJSON['num_feedback'];
     let filteredCount = totalCount;
@@ -100,6 +100,8 @@ const getFeedback = async (offset, size = 10, ratingFilter, deviceFilter, browse
     const deviceCondition = deviceFilter && deviceFilter !== '';
     const browserCondition = browserFilter && browserFilter !== '';
     const dateCondition = dateFilter && dateFilter !== '';
+    const userNameCondition = userNameFilter && userNameFilter !== '';
+    const languageCondition = languageFilter && languageFilter !== '';
 
     if (!ratingCondition)
         ratingFilter = 'true'
@@ -120,8 +122,25 @@ const getFeedback = async (offset, size = 10, ratingFilter, deviceFilter, browse
         dateFilter = 'true'
     else
         dateFilter = "created_on::DATE=" + "\'" + dateFilter + "\'"
+
+    if (!userNameCondition)
+        userNameFilter = 'true'
+    else
+        userNameFilter = 'username ILIKE ' + "\'" + userNameFilter + '%' + "\'"
+    
+    if (!languageCondition)
+        languageFilter = 'true'
+    else{
+        if(languageFilter === "unavailable"){
+            languageFilter = 'language is null OR language = \'\' OR language = \'null\''
+        } else {
+            languageFilter = 'language ILIKE ' + "\'" + languageFilter + '%' + "\'"
+        }
+    }
+        
+    
     let query = getFeedbackFilterQuery;
-    let filter = pgp.as.format('$1:raw AND $2:raw AND $3:raw AND $4:raw', [ratingFilter, deviceFilter, browserFilter, dateFilter])
+    let filter = pgp.as.format('$1:raw AND $2:raw AND $3:raw AND $4:raw AND $5:raw AND ($6:raw)', [ratingFilter, deviceFilter, browserFilter, dateFilter, userNameFilter, languageFilter])
     let params = [filter, size, offset];
     let CountJSON = await getCount(getFeedbackFilterCountQuery, params);
     filteredCount = CountJSON['num_feedback'];
@@ -172,7 +191,7 @@ const getFeedback = async (offset, size = 10, ratingFilter, deviceFilter, browse
     //     filteredCount = bCountJSON['num_feedback'];
     // }
     return db.many(query, params).then(result => {
-        console.log(totalCount, filteredCount);
+        // console.log(totalCount, filteredCount);
         return getSuccessPromise({"total": totalCount, "data": result, "filtered": filteredCount})
     }).catch(error => getErrorPromise(error))
 }

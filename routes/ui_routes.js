@@ -7,7 +7,7 @@ function setUIRoutes(app){
     });
 
     app.get("/feedback", function (req, res) {
-        res.render("feedback", { root: __dirname });
+        res.render("feedback", { root: __dirname, languages_map: LANGUAGES });
     });
 
     app.get("/:language", function (req, res) {

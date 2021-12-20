@@ -71,6 +71,8 @@
 <br/>
 <center>
     <div class="post-control-panel">
+        <input type="text" placeholder="Search User" id="user-search"/>
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
         <input type="text" placeholder="Search device" id="device-search"/>
         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
         <label for="rating-dropdown">Choose Rating</label>
@@ -81,6 +83,16 @@
             <option value="3">3</option>
             <option value="2">2</option>
             <option value="1">1</option>
+        </select>
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        <label for="language-dropdown">Choose Language</label>
+        <select id="language-dropdown">
+            <option value="">No Filter</option>
+            <option value="unavailable">&ltNot available&gt</option>
+            <% languages_map.forEach(function(language_map) { %>
+                <option value="<%= language_map.code %>"><%= language_map.name %></option>
+            <% }); %>
         </select>
         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
         <input type="text" placeholder="Search Browser" id="browser-search"/>
@@ -94,13 +106,15 @@
 <table id="feedback-table" class="table table-striped table-bordered" width="98%" style="margin:20px !important;">
     <thead>
     <tr>
-        <th>Audio</th>
-        <th>Text</th>
+        <th>User</th>
+        <th>Source</th>
+        <th>Language</th>
+        <th>Date</th>
         <th>Rating</th>
         <th>Device</th>
         <th>Browser</th>
-        <th>Date</th>
-        <th>Action</th>
+        
+        <!-- <th>Action</th> -->
     </tr>
     </thead>
     <tbody>
@@ -108,6 +122,8 @@
     </tbody>
 </table>
 <script>
+
+    let languagesMap = <%- JSON.stringify(languages_map) %>;
     $(document).ready(function () {
         try {
             if ($('[type="date"]').prop('type') != 'date') {
@@ -128,9 +144,11 @@
                 "data": function (d) {
                     return $.extend({}, d, {
                         "device_filter": $("#device-search").val().toLowerCase(),
+                        "username_filter": $("#user-search").val().toLowerCase(),
                         "rating_filter": $("#rating-dropdown").val().toLowerCase(),
                         "browser_filter": $("#browser-search").val().toLowerCase(),
-                        "date_filter": $("#date-search").val().toLowerCase()
+                        "date_filter": $("#date-search").val().toLowerCase(),
+                        "language_filter": $("#language-dropdown").val().toLowerCase()
                     })
                 }
             },
@@ -140,15 +158,50 @@
             // ],
             columns: [
                 {
-                    data: 'audio_path',
-                    "searchable": false,
+                    data: 'username',
+                    "searchable": true,
                     render: function (data, type, row) {
-                        return '<audio controls><source src="' + data + '" type="audio/wav"></audio>'
+                        if(data){
+                            return data;
+                        } else {
+                            return "-"
+                        }
                     }
                 },
                 {
-                    data: "text",
-                    searchable: false
+                    data: 'audio_path',
+                    "searchable": false,
+                    render: function (data, type, row) {
+                        let transcription = row['text'];
+                        if(transcription === "null"){
+                            transcription = "< Not Available >"
+                        }
+                        return '<div><audio controls><source src="' + data + '" type="audio/wav"></audio><p>'+transcription+'</p></div>'
+                    }
+                },
+                {
+                    data: "language",
+                    "searchable": true,
+                    render: function (data, type, row) {
+                        if(data !== "null"){
+                            for(let index in languagesMap){
+                                if(data === languagesMap[index].code){
+                                    return languagesMap[index].name;
+                                }
+                            }
+                            return data;
+                        }
+                        return "Unavailable";
+                    }
+                },
+                {
+                    data: "created_on",
+                    render: function (data, type, row) {
+                        const obj = new Date(data)
+                        let str_day_dt = obj.toUTCString()
+                        let str_dt = str_day_dt.split(",")[1]
+                        return obj.toLocaleString()//str_dt.replace('GMT', '').trim()
+                    }
                 },
                 {
                     data: "rating",
@@ -169,29 +222,14 @@
                 },
                 {
                     data: "browser",
-                },
-                {
-                    data: "created_on",
-                    render: function (data, type, row) {
-                        const obj = new Date(data)
-                        let str_day_dt = obj.toUTCString()
-                        let str_dt = str_day_dt.split(",")[1]
-                        return obj.toLocaleString()//str_dt.replace('GMT', '').trim()
-                    }
-                },
-                {
-                    data: 'audio_path',
-                    "searchable": false,
-                    render: function (data, type, row) {
-                        runModelBtn = `<div>
-                                <button type="button" class="btn btn-primary">Run model</button>
-                                <div class="loader" style='display: none;'></div>
-                                <p class='result'></p>
-                                </div>
-                                `
-                        return `<div>Run model</div>`
-                    }
                 }
+                // ,{
+                //     data: 'audio_path',
+                //     "searchable": false,
+                //     render: function (data, type, row) {
+                //         return `<div>Run model</div>`
+                //     }
+                // }
             ]
         });
 
@@ -201,65 +239,25 @@
             $("#rating-dropdown").val("");
             $("#browser-search").val("");
             $("#date-search").val("");
+            $("#language-dropdown").val("");
+            $("#user-search").val("");
             table.search('').columns().search('').draw();
         });
 
-        $('#device-search, #rating-dropdown,#browser-search,#date-search').bind('keyup change', function () {
+        $('#device-search, #rating-dropdown, #browser-search, #date-search, #user-search, #language-dropdown').bind('keyup change', function () {
             table.draw();
         });
 
 
-        $('#feedback-table tbody').on('click', 'button', function () {
-            const selectedRow = table.row($(this).parents('tr'));
-            const resultElement = selectedRow.node().getElementsByClassName('result')[0]
-            const loader = $(selectedRow.node().getElementsByClassName('loader')[0])
+        // $('#feedback-table tbody').on('click', 'button', function () {
+        //     const selectedRow = table.row($(this).parents('tr'));
+        //     const resultElement = selectedRow.node().getElementsByClassName('result')[0]
+        //     const loader = $(selectedRow.node().getElementsByClassName('loader')[0])
 
-            console.log(loader)
-            let data = selectedRow.data();
-            let audio_path = data['audio_path'];
-            let language = data['language'];
-            let formData = new FormData();
-            formData.append('audio_path', audio_path);
-            $.ajax({
-                type: 'POST',
-                url: 'https://inference.vakyansh.in/model-service/transcribe_gcp?lang=' + language,
-                data: formData,
-                contentType: false,
-                processData: false,
-                crossDomain: true,
-                beforeSend: function () {
-                    // Show image container
-                    $(loader).show();
-                },
-                success: function (data, textStatus, jqXHR) {
-                    console.log(data);
-                    try {
-                        var final_ = data['transcription']
-                        var text = ''
-                        console.log(final_[0])
-                        console.log(final_[0].length)
-                        if (final_.length > 1) {
-                            console.log('here 2')
-                            text = final_
-                            console.log(text)
-                            console.log('here')
-                            resultElement.innerText = text
-                        } else {
-                            console.log('in second')
-                            resultElement.innerText = final_
-                        }
-                    } catch (err) {
-                    }
-                    $(loader).hide();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    alert('Failed: ' + textStatus);
-                    $(loader).hide();
-                }
+        //     let data = selectedRow.data();
+            
 
-            });
-
-        });
+        // });
     });
 </script>
 </body>
