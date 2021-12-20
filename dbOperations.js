@@ -99,7 +99,7 @@ const getFeedback = async (offset, size = 10, ratingFilter, deviceFilter, browse
     const ratingCondition = ratingFilter && ratingFilter !== '';
     const deviceCondition = deviceFilter && deviceFilter !== '';
     const browserCondition = browserFilter && browserFilter !== '';
-    const dateCondition = dateFilter && dateFilter !== '';
+    const dateCondition = dateFilter && dateFilter !== '' && dateFilter.length !== 0;
     const userNameCondition = userNameFilter && userNameFilter !== '';
     const languageCondition = languageFilter && languageFilter !== '';
 
@@ -121,7 +121,7 @@ const getFeedback = async (offset, size = 10, ratingFilter, deviceFilter, browse
     if (!dateCondition)
         dateFilter = 'true'
     else
-        dateFilter = "created_on::DATE=" + "\'" + dateFilter + "\'"
+        dateFilter = "created_on::DATE BETWEEN " + "\'" + dateFilter[0] + "\' AND \'" + dateFilter[1] + "\'"
 
     if (!userNameCondition)
         userNameFilter = 'true'

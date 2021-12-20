@@ -134,7 +134,8 @@ function setApiRoutes(app) {
         const ratingFilter = req.query.rating_filter || '';
         const deviceFilter = req.query.device_filter || '';
         const browserFilter = req.query.browser_filter || '';
-        const dateFilter = req.query.date_filter || '';
+        let dateFilter = JSON.parse(req.query.date_filter || []);
+        dateFilter = dateFilter.length === 0 ? '' : dateFilter; 
         const userNameFilter = req.query.username_filter || '';
         const languageFilter = req.query.language_filter || '';
         getFeedback(start, size, ratingFilter, deviceFilter, browserFilter, dateFilter, userNameFilter, languageFilter).then(result => {
