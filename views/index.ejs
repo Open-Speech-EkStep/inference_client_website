@@ -863,6 +863,10 @@
                 selected_lang = current_lang;
                 audioData = [];
                 recordingLength = 0;
+                transcription_text = "";
+                transcription_language = "";
+                recordedBlob = null;
+                recordedBlobDuration = 0;
                 enableAutoMicClose(stopRecording);
             }
 
@@ -1214,6 +1218,7 @@
                         $('#output-loader-icon').hide();
                         if (resp['text'] !== null && resp['text'] !== undefined && resp['text'] !== 'null') {
                             document.getElementById('output').textContent = resp["text"];
+                            transcription_text = resp["text"];
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
