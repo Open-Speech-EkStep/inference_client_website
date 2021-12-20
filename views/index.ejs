@@ -523,9 +523,10 @@
                 init variables
             */
             let ENABLE_LOGS = false;
-            let languagesMap = <%- JSON.stringify(languages_map) %>;
+            let languagesMap = JSON.parse(`<%- JSON.stringify(languages_map) %>`);
+            let openAPIProxyURL = `<%- open_api_proxy_url %>`;
             let socket, socket_close_timeout = null, fileSocket, micSocketIO, fileSocketIO;
-            let current_lang = 'en-IN', selected_lang = 'en-IN';
+            let current_lang = 'en', selected_lang = 'en';
             let bufferSize = 16384;
             let sentOnce = true;
             let state = "OFF";
@@ -545,7 +546,7 @@
             */
             function fetchCurrentLanguageCode(language) {
                 language = language.toLowerCase();
-                let languageCode = "en-IN";
+                let languageCode = "en";
                 for (let ind in languagesMap) {
                     if (languagesMap[ind].id === language) {
                         languageCode = languagesMap[ind].code;
@@ -777,7 +778,7 @@
             }
 
             function connectSocket(startMic) {
-                socket = io('/', { autoConnect: false, query: `language=${current_lang}` });
+                socket = io(openAPIProxyURL, { autoConnect: false, query: `language=${current_lang}` });
                 socket.connect();
                 socket.on('connect', function () {
                     userId = socket.id;
@@ -790,7 +791,7 @@
                     document.getElementById('userid').innerHTML = "";
                 });
                 socket.on('response', function (data, language) {
-                    if (language === "en-IN") data = data.toLowerCase();
+                    if (language === "en") data = data.toLowerCase();
                     document.getElementById('output').textContent = data;
                     transcription_text = data;
                     transcription_language = language;
@@ -800,9 +801,9 @@
                         console.log("disconnected");
                 })
                 socket.on('terminate', function () {
-                    console.log("terminate called")
+                    if(ENABLE_LOGS === true)
+                        console.log("terminate called")
                     if (socket !== null && socket.connected) {
-                        console.log("END socket called")
                         endSocket();
                         if (ENABLE_LOGS === true)
                             console.log("end socket called");

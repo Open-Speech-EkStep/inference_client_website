@@ -13,7 +13,7 @@ function setUIRoutes(app){
     app.get("/:language", function (req, res) {
         const language = req.params.language;
         if (language_ids.includes(language.toLowerCase())) {
-            res.render("index", { root: __dirname, languages_map: LANGUAGES });
+            res.render("index", { root: __dirname, languages_map: LANGUAGES, open_api_proxy_url: process.env.OPEN_API_PROXY_URL || "/" });
         } else {
             res.render("not-found", { root: __dirname, languages_map: LANGUAGES });
         }
