@@ -19,11 +19,11 @@ let cn = {
 const db = pgp(cn);
 
 
-const where = pgp.as.format('WHERE $1 and $2 and $3', [5, '1=1', '1=1']); // pre-format WHERE condition
+// const where = pgp.as.format('WHERE $1 and $2 and $3', [5, '1=1', '1=1']); // pre-format WHERE condition
 // await db.any('SELECT * FROM products $1:raw', where);
 
-const addFeedbackQuery = 'Insert into inference_feedback("user_id", "language", "audio_path", "text", "rating","feedback","device","browser", "username", "age", "gender", "feedback_categories") values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12:list);';
-const getFeedbackQuery = 'Select * from inference_feedback order by created_on desc limit $1 offset $2';
+const addFeedbackQuery = 'Insert into inference_feedback("user_id", "language", "audio_path", "text", "rating","feedback","device","browser", "username", "age", "gender", "feedback_categories", "audio_duration") values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12:list, $13);';
+// const getFeedbackQuery = 'Select * from inference_feedback order by created_on desc limit $1 offset $2';
 // const getFeedbackFilterQuery = "Select * from inference_feedback where ${1} and ${2} and ${3}  order by created_on desc limit $4 offset $5";
 const getFeedbackFilterQuery = 'SELECT * FROM inference_feedback WHERE $1:raw order by created_on desc limit $2 offset $3';
 const getFeedbackFilterCountQuery = 'Select count(*) as num_feedback from inference_feedback WHERE $1:raw';
@@ -72,7 +72,7 @@ function formatArray(arr) {
     return s + '}';
 }
 
-const addFeedback = (user_id, language, audio_path, text, rating, feedback, device, browser, date, username, age, gender, feedbackCategories) => {
+const addFeedback = (user_id, language, audio_path, audio_duration, text, rating, feedback, device, browser, date, username, age, gender, feedbackCategories) => {
     const feedback_categories = formatArray(feedbackCategories);
     return db.none(addFeedbackQuery, [
         user_id,
@@ -86,7 +86,8 @@ const addFeedback = (user_id, language, audio_path, text, rating, feedback, devi
         username, 
         age,
         gender, 
-        feedback_categories
+        feedback_categories,
+        audio_duration
     ])
 }
 
@@ -196,7 +197,13 @@ const getFeedback = async (offset, size = 10, ratingFilter, deviceFilter, browse
     }).catch(error => getErrorPromise(error))
 }
 
+const getUserDetails = (username) => {
+    return db.one("select age, gender, audio_info.dur from inference_feedback, (select sum(audio_duration) as dur from inference_feedback where username=$1 \
+    group by username) as audio_info where username = $1 limit 1;", [username]);
+}
+
 module.exports = {
     addFeedback,
-    getFeedback
+    getFeedback,
+    getUserDetails
 }

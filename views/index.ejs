@@ -534,7 +534,7 @@
             let localBuffer = null, isSpeaking = false;
             let timeout_ = null, state_end = false, audioData = [], recordingLength = 0, defaultSampleRate = 48000,
                 socket_disconnect_timeout = null;
-            let userId = null, recordedBlob = null, rating = null, feedback = null, device = null, browser = null,
+            let userId = null, recordedBlob = null, recordedBlobDuration = 0, rating = null, feedback = null, device = null, browser = null,
                 transcription_text = null,
                 transcription_language = null, end_timeout = null;
             let nAgt = navigator.userAgent, verOffset;
@@ -1040,7 +1040,14 @@
                 recordedBlob = blob;
                 let url = window.URL.createObjectURL(blob);
                 document.getElementById("sample_id").src = url;
-                document.getElementById("audio_sample_id").load();
+                let audioElement = document.getElementById("audio_sample_id");
+                
+                audioElement.addEventListener('loadedmetadata', function(){
+                    let duration = audioElement.duration;
+                    recordedBlobDuration = duration;
+                },false);
+
+                audioElement.load();
             }
 
             function startFileUpload() {
@@ -1097,72 +1104,6 @@
                 }).pipe(stream)
             }
 
-    </script>
-    <script>
-        /*
-        Store to db related code
-        */
-
-        function saveRating(bodyParams, enableRating) {
-            const { recordedBlob, rating, feedback, device, browser, transcription_text, transcription_language, userId,username,
-                    age,
-                    gender,
-                    feedbackCategories } = bodyParams;
-            const formData = new FormData();
-            formData.append('audio_data', recordedBlob);
-            formData.append('rating', rating);
-            formData.append('feedback', feedback);
-            formData.append('device', device);
-            formData.append('browser', browser);
-            formData.append('text', transcription_text);
-            formData.append('language', transcription_language);
-            formData.append('user_id', userId);
-            formData.append('username', username);
-            formData.append('age', age);
-            formData.append('gender', gender);
-            formData.append('feedbackCategories', feedbackCategories);
-
-            $.ajax({
-                type: 'POST',
-                url: 'api/feedback',
-                data: formData,
-                processData: false,
-                contentType: false,
-                beforeSend: function () {
-                    $("#loader").show();
-                },
-                success: function (data, textStatus, jqXHR) {
-                    $("#loader").hide();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    $("#loader").hide();
-                    alert("Rating update failed, Please try again")
-                    enableRating(true)
-                    $('#Submit').attr("disabled", false);
-                }
-                while (i < size) {
-                    let end_size = offset + chunk_size
-                    if (size < end_size) {
-                        end_size = size
-                    }
-                    let blob = file.slice(offset, end_size);
-                    let reader = new FileReader();
-                    reader.addEventListener('load', function (e) {
-                        let chunk = e.target.result;
-                        if (ENABLE_LOGS === true)
-                            console.log("emitted file", chunk);
-                        let inpStream = ss.createStream({ highWaterMark: 3500000 });
-                        ss(fileSocket).emit('file_data', inpStream, current_lang, file.name);
-                        ss.createBlobReadStream(chunk).pipe(inpStream);
-                    });
-                    reader.readAsArrayBuffer(blob);
-                    offset += chunk_size;
-                    i += chunk_size;
-                    if (ENABLE_LOGS === true)
-                        console.log("read");
-                }
-            }
-
         </script>
         <script>
             /*
@@ -1170,12 +1111,13 @@
             */
 
             function saveRating(bodyParams, enableRating) {
-                const { recordedBlob, rating, feedback, device, browser, transcription_text, transcription_language, userId, username,
+                const { recordedBlob,recordedBlobDuration, rating, feedback, device, browser, transcription_text, transcription_language, userId, username,
                     age,
                     gender,
                     feedbackCategories } = bodyParams;
                 const formData = new FormData();
                 formData.append('audio_data', recordedBlob);
+                formData.append('audio_duration', recordedBlobDuration);
                 formData.append('rating', rating);
                 formData.append('feedback', feedback);
                 formData.append('device', device);
@@ -1328,6 +1270,7 @@
                     enableRating(false)
                     saveRating({
                         recordedBlob,
+                        recordedBlobDuration,
                         rating,
                         feedback,
                         device,

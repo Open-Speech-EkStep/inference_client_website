@@ -1,4 +1,4 @@
-const { addFeedback, getFeedback } = require('./../dbOperations');
+const { addFeedback, getFeedback, getUserDetails } = require('./../dbOperations');
 const { uploadFile } = require('./../uploader');
 const GrpcClient = require('./../proxy/grpc_client');
 const fs = require("fs");
@@ -101,13 +101,13 @@ function setApiRoutes(app) {
 
     app.post("/api/feedback", function (req, res) {
         const file = req.file;
-        const { user_id, language, text, rating, feedback="", device, browser, date, username, age, gender, feedbackCategories } = req.body;
+        const { user_id, language, text, audio_duration, rating, feedback="", device, browser, date, username, age, gender, feedbackCategories } = req.body;
         uploadFile(file.path, user_id, language)
             .then((uploadResponse) => {
                 const blobName = uploadResponse[0]['metadata']['name'];
                 const bucketName = uploadResponse[0]['metadata']['bucket'];
                 const audio_path = `https://storage.googleapis.com/${bucketName}/${blobName}`
-                addFeedback(user_id, language, audio_path, text, rating, feedback, device, browser, date, username, age, gender, JSON.parse(feedbackCategories)).then(() => {
+                addFeedback(user_id, language, audio_path,audio_duration, text, rating, feedback, device, browser, date, username, age, gender, JSON.parse(feedbackCategories)).then(() => {
                     res.json({ "success": true })
                 }).catch(err => {
                     console.log("error", err)
@@ -158,6 +158,20 @@ function setApiRoutes(app) {
                 res.status(500).json({ "success": false })
             }
         })
+    });
+
+    app.get("/api/feedback/user/:username", (req, res)=>{
+        const username = req.params.username || "";
+        if(username === ""){
+            res.sendStatus(400);
+        } else {
+            getUserDetails(username).then(result=>{
+                res.json(result);
+            }).catch(err=>{
+                console.log(err);
+                res.status(500).json({ "success": false })
+            })
+        }
     })
 };
 
