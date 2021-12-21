@@ -1127,7 +1127,7 @@
             */
 
             function saveRating(bodyParams, enableRating) {
-                const { recordedBlob,recordedBlobDuration, rating, feedback, device, browser, transcription_text, transcription_language, userId, username,
+                const { recordedBlob,recordedBlobDuration, rating, feedback, device, browser, transcription_text, current_lang, userId, username,
                     age,
                     gender,
                     feedbackCategories, expectedText } = bodyParams;
@@ -1139,7 +1139,7 @@
                 formData.append('device', device);
                 formData.append('browser', browser);
                 formData.append('text', transcription_text);
-                formData.append('language', transcription_language);
+                formData.append('language', current_lang);
                 formData.append('user_id', userId);
                 formData.append('username', username);
                 formData.append('age', age);
@@ -1266,6 +1266,7 @@
                 device = getDeviceInfo();
                 browser = getBrowserInfo();
                 $('#Submit').on('click', function () {
+
                     event.preventDefault();
                     $('.active').removeClass('active');
                     $(this).addClass('active');

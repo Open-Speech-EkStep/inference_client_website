@@ -101,7 +101,38 @@ function setApiRoutes(app) {
 
     app.post("/api/feedback", function (req, res) {
         const file = req.file;
-        const { user_id, language, text, audio_duration, rating, feedback="", device, browser, date, username, age, gender, feedbackCategories, original_text = "" } = req.body;
+        const { user_id, language = "", text, audio_duration, rating=0, feedback="", device, browser, date, username="", age = 0, gender="", feedbackCategories=[], original_text = "" } = req.body;
+        
+        if(!original_text || original_text.trim().length === 0){
+            return res.status(400).json({"success": false, "message": "Please provide expected text"})
+        }
+
+        if(!language || language.trim().length === 0){
+            return res.status(400).json({"success": false, "message": "Please provide language"})
+        }
+
+        if(!username || username.trim().length === 0){
+            return res.status(400).json({"success": false, "message": "Please provide username"})
+        }
+
+        if(!gender || gender.trim().length === 0){
+            return res.status(400).json({"success": false, "message": "Please provide gender"})
+        }
+
+        if(age === 0){
+            return res.status(400).json({"success": false, "message": "Please provide age"})
+        }
+
+        if(rating === 0){
+            return res.status(400).json({"success": false, "message": "Please provide rating"})
+        }
+
+        if(feedbackCategories.length === 0){
+            return res.status(400).json({"success": false, "message": "Please provide feedback categories"})
+        }
+
+
+        
         uploadFile(file.path, user_id, language)
             .then((uploadResponse) => {
                 const blobName = uploadResponse[0]['metadata']['name'];
