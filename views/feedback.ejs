@@ -157,8 +157,8 @@
                 <th>Rating</th>
                 <th>Device</th>
                 <th>Browser</th>
-
-                <!-- <th>Action</th> -->
+                <th>Feedback Categories</th>
+                <th>Feedback</th>
             </tr>
         </thead>
         <tbody>
@@ -366,6 +366,16 @@
                     },
                     {
                         data: "browser",
+                    },
+                    {
+                        data: "feedback_categories",
+                        "searchable": false,
+                        render: function (data, type, row) {
+                            return (data !== undefined && data !== null) ? data.toString() : "-";
+                        }
+                    },
+                    {
+                        data: "feedback"
                     }
                     // ,{
                     //     data: 'audio_path',
