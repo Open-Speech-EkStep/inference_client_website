@@ -1134,7 +1134,7 @@
                 formData.append('age', age);
                 formData.append('gender', gender);
                 formData.append('feedbackCategories', JSON.stringify(feedbackCategories));
-
+                formData.append('original_text', "");
                 $.ajax({
                     type: 'POST',
                     url: 'api/feedback',

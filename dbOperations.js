@@ -22,7 +22,7 @@ const db = pgp(cn);
 // const where = pgp.as.format('WHERE $1 and $2 and $3', [5, '1=1', '1=1']); // pre-format WHERE condition
 // await db.any('SELECT * FROM products $1:raw', where);
 
-const addFeedbackQuery = 'Insert into inference_feedback("user_id", "language", "audio_path", "text", "rating","feedback","device","browser", "username", "age", "gender", "feedback_categories", "audio_duration") values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12:list, $13);';
+const addFeedbackQuery = 'Insert into inference_feedback("user_id", "language", "audio_path", "text", "rating","feedback","device","browser", "username", "age", "gender", "feedback_categories", "audio_duration", "original_text") values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12:list, $13, $14);';
 // const getFeedbackQuery = 'Select * from inference_feedback order by created_on desc limit $1 offset $2';
 // const getFeedbackFilterQuery = "Select * from inference_feedback where ${1} and ${2} and ${3}  order by created_on desc limit $4 offset $5";
 const getFeedbackFilterQuery = 'SELECT * FROM inference_feedback WHERE $1:raw order by created_on desc limit $2 offset $3';
@@ -72,7 +72,7 @@ function formatArray(arr) {
     return s + '}';
 }
 
-const addFeedback = (user_id, language, audio_path, audio_duration, text, rating, feedback, device, browser, date, username, age, gender, feedbackCategories) => {
+const addFeedback = (user_id, language, audio_path, audio_duration, text, rating, feedback, device, browser, date, username, age, gender, feedbackCategories, originalText) => {
     const feedback_categories = formatArray(feedbackCategories);
     return db.none(addFeedbackQuery, [
         user_id,
@@ -87,7 +87,8 @@ const addFeedback = (user_id, language, audio_path, audio_duration, text, rating
         age,
         gender, 
         feedback_categories,
-        audio_duration
+        audio_duration,
+        originalText
     ])
 }
 
