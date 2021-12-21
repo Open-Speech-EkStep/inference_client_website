@@ -320,10 +320,23 @@
                         "searchable": false,
                         render: function (data, type, row) {
                             let transcription = row['text'];
+                            let originalText = row['original_text'];
                             if (transcription === "null") {
                                 transcription = "< Not Available >"
                             }
-                            return '<div><audio controls><source src="' + data + '" type="audio/wav"></audio><p>' + transcription + '</p></div>'
+                            if (transcription.trim().length === 0) {
+                                transcription = "< Empty >"
+                            }
+                            if (originalText === "null" || originalText === null) {
+                                originalText = "< Not Available >"
+                            }
+                            return '<div> \
+                                <audio controls> \
+                                    <source src="' + data + '" type="audio/wav"> \
+                                </audio> \
+                                <p> <b>Output&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp: </b>' + transcription + '</p> \
+                                <p> <b>Original Text: </b>' + originalText + '</p> \
+                            </div>'
                         }
                     },
                     {

@@ -443,6 +443,19 @@
                     </div>
                     <br />
                     <br />
+                    <div class="text-left col-sm-12">
+                        <label class="form-label text-left" for="expected_text">Expected Text:<span
+                            class="asterisk">*</span></label>
+                        <textarea rows="3" maxlength="1000" placeholder="Type here..." name="expected_text"
+                            id="expected-text" class="form-control" value=""></textarea>
+                        <div class="feedBack-limit justify-content-end mb-4">
+                            <span class="align-middle">
+                                Only 1000 characters allowed
+                            </span>
+                        </div>
+                    </div>
+                    <br />
+                    <br />
                     <div class="col-sm-12">
                         <button id="Submit" class="btn btn-secondary" type="button" name="SUBMITBUTTON">
                             Submit
@@ -537,7 +550,7 @@
                 socket_disconnect_timeout = null;
             let userId = null, recordedBlob = null, recordedBlobDuration = 0, rating = null, feedback = null, device = null, browser = null,
                 transcription_text = null,
-                transcription_language = null, end_timeout = null;
+                 end_timeout = null;
             let nAgt = navigator.userAgent, verOffset;
         </script>
         <script>
@@ -794,7 +807,6 @@
                     if (language === "en") data = data.toLowerCase();
                     document.getElementById('output').textContent = data;
                     transcription_text = data;
-                    transcription_language = language;
                 });
                 socket.on('disconnect', function () {
                     if (ENABLE_LOGS === true)
@@ -864,7 +876,6 @@
                 audioData = [];
                 recordingLength = 0;
                 transcription_text = "";
-                transcription_language = "";
                 recordedBlob = null;
                 recordedBlobDuration = 0;
                 enableAutoMicClose(stopRecording);
@@ -1119,7 +1130,7 @@
                 const { recordedBlob,recordedBlobDuration, rating, feedback, device, browser, transcription_text, transcription_language, userId, username,
                     age,
                     gender,
-                    feedbackCategories } = bodyParams;
+                    feedbackCategories, expectedText } = bodyParams;
                 const formData = new FormData();
                 formData.append('audio_data', recordedBlob);
                 formData.append('audio_duration', recordedBlobDuration);
@@ -1134,7 +1145,7 @@
                 formData.append('age', age);
                 formData.append('gender', gender);
                 formData.append('feedbackCategories', JSON.stringify(feedbackCategories));
-                formData.append('original_text', "");
+                formData.append('original_text', expectedText);
                 $.ajax({
                     type: 'POST',
                     url: 'api/feedback',
@@ -1146,6 +1157,7 @@
                     },
                     success: function (data, textStatus, jqXHR) {
                         $("#loader").hide();
+                        $("#expected-text").val("");
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         $("#loader").hide();
@@ -1273,6 +1285,8 @@
                         feedbackCategories.push(div.value)
                     })
 
+                    let expectedText = $("#expected-text").val().trim();
+
                     enableRating(false)
                     saveRating({
                         recordedBlob,
@@ -1282,12 +1296,13 @@
                         device,
                         browser,
                         transcription_text,
-                        transcription_language,
+                        current_lang,
                         userId,
                         username,
                         age,
                         gender,
-                        feedbackCategories
+                        feedbackCategories,
+                        expectedText
                     }, enableRating);
                 });
                 enableRating(false);
@@ -1339,8 +1354,9 @@
                     const selectedFeedbackCategoriesCount = $('#tags').children().length;
                     const isRequiredFreeText = $("#other-feedBack").attr('checked') == 'checked';
                     const freeText = $(`#feedback-free-text`).val().trim();
+                    const expectedText = $(`#expected-text`).val().trim();
                     const isValidText = isRequiredFreeText ? freeText.length > 0 : true;
-                    const isAllRequiredFieldFilled = username.length > 0 && gender.length > 0 && age > 0 && isValidText && selectedFeedbackCategoriesCount > 0 && ratingCount > 0;
+                    const isAllRequiredFieldFilled = username.length > 0 && expectedText.length > 0 && gender.length > 0 && age > 0 && isValidText && selectedFeedbackCategoriesCount > 0 && ratingCount > 0;
 
                     if (isAllRequiredFieldFilled) {
                         $('#Submit').attr("disabled", false);
@@ -1355,7 +1371,7 @@
                     $('#gender-list').val(selectedGender)
                     enableFeedbackSubmit();
                 });
-                $('#age').add('#feedback-free-text').add('#username').on('input focus', (e) => {
+                $('#age').add('#feedback-free-text').add('#username').add('#expected-text').on('input focus', (e) => {
                     enableFeedbackSubmit();
                 });
 
