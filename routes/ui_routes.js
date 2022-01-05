@@ -6,6 +6,10 @@ function setUIRoutes(app){
         res.render("test_stream", { root: __dirname });
     });
 
+    app.get('/tts', (req, res) => {
+        res.render("tts", { root: __dirname });
+    });
+
     app.get("/feedback", function (req, res) {
         res.render("feedback", { root: __dirname, languages_map: LANGUAGES });
     });
