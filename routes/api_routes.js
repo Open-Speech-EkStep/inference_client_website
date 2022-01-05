@@ -101,11 +101,9 @@ function setApiRoutes(app) {
 
     app.post("/tts/infer", async (req, res) => {
         // res.setHeader('Access-Control-Allow-Origin', '*');
-        const { text, language } = req.body;
         try{
             const baseUrl = 'http://34.121.100.224:5000/TTS/';
-            const requestBody = { "text": text, "enableITN": true  };
-            const resp = await axios.post(`${baseUrl}`, requestBody);
+            const resp = await axios.post(`${baseUrl}`, req.body);
             res.json(resp.data);
         } catch(err){
             console.log(err)

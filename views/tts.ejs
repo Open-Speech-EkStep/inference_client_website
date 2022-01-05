@@ -74,7 +74,7 @@
             <div class="col-sm-12">
                 <div class="outputcontainer">
                     <textarea id="inputText" style="width: 80%" placeholder="Input Text"
-                              rows="6">भारत मेरा देश है और मुझे भारतीय होने पर गर्व है।ये विश्व का सातवाँ सबसे बड़ा और विश्व में दूसरा सबसे अधिक जनसंख्या वाला देश है।</textarea>
+                              rows="6">भारत मेरा देश है और मुझे भारतीय होने पर गर्व है।</textarea>
 
                 </div>
             </div>
@@ -139,6 +139,7 @@
                 // enter your logic for when there is an error (ex. error toast)
                 console.log(error)
                 enableUI()
+                document.getElementById('audioData').innerHTML ='<p style="color: red">Failed to process</p>'
             })
     });
 </script>
