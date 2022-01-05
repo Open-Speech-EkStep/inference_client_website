@@ -99,6 +99,20 @@ function setApiRoutes(app) {
         }
     })
 
+    app.post("/tts/infer", async (req, res) => {
+        // res.setHeader('Access-Control-Allow-Origin', '*');
+        const { text, language } = req.body;
+        try{
+            const baseUrl = 'http://34.121.100.224:5000/TTS/';
+            const requestBody = { "text": text, "enableITN": true  };
+            const resp = await axios.post(`${baseUrl}`, requestBody);
+            res.json(resp.data);
+        } catch(err){
+            console.log(err)
+            res.sendStatus(500);
+        }
+    })
+
     app.post("/api/feedback", function (req, res) {
         const file = req.file;
         const { user_id, language = "", text, audio_duration, rating=0, feedback="", device, browser, date, username="", age = 0, gender="", feedbackCategories=[], original_text = "" } = req.body;
@@ -132,7 +146,7 @@ function setApiRoutes(app) {
         }
 
 
-        
+
         uploadFile(file.path, user_id, language)
             .then((uploadResponse) => {
                 const blobName = uploadResponse[0]['metadata']['name'];
@@ -166,7 +180,7 @@ function setApiRoutes(app) {
         const deviceFilter = req.query.device_filter || '';
         const browserFilter = req.query.browser_filter || '';
         let dateFilter = JSON.parse(req.query.date_filter || []);
-        dateFilter = dateFilter.length === 0 ? '' : dateFilter; 
+        dateFilter = dateFilter.length === 0 ? '' : dateFilter;
         const userNameFilter = req.query.username_filter || '';
         const languageFilter = req.query.language_filter || '';
         getFeedback(start, size, ratingFilter, deviceFilter, browserFilter, dateFilter, userNameFilter, languageFilter).then(result => {
