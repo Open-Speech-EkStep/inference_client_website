@@ -36,7 +36,11 @@
         .row {
             padding: 15px;
             margin: 15px;
+        }
+
+        .container {
             border: 1px black solid;
+            margin: 30px auto;
         }
 
     </style>
@@ -68,9 +72,8 @@
                     </select>
                 </div>
             </div>
-            <div class="col-sm-12">
-                <br/>
-            </div>
+        </div>
+        <div class="row">
             <div class="col-sm-12">
                 <div class="outputcontainer">
                     <textarea id="inputText" style="width: 80%" placeholder="Input Text"
@@ -78,12 +81,17 @@
 
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="col-sm-12">
                 <button id="submit">Submit</button>
             </div>
-
+        </div>
+        <div class="row">
             <div class="col-sm-12">
                 <div class="outputcontainer" id="audioData" style="margin: 20px">
+                </div>
+                <div class="outputcontainer" id="timer" style="margin: 20px">
                 </div>
             </div>
         </div>
@@ -91,7 +99,7 @@
 </center>
 </body>
 <script>
-    
+
     function disableUI() {
         $("#inputText").attr("disabled", "disabled");
         $("#gender").attr("disabled", "disabled");
@@ -103,7 +111,7 @@
         $("#gender").removeAttr("disabled");
         $("#language").removeAttr("disabled");
     }
-    
+
     $('#submit').click(() => {
         disableUI();
 
@@ -112,6 +120,8 @@
         var language = $('#language').val();
         console.log('called Gender:', gender, ' Text:', inputText);
         document.getElementById('audioData').innerHTML = '<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>';
+
+        const startTime = Date.now();
 
         fetch('/tts/infer', {
             // mode: 'no-cors',
@@ -139,8 +149,10 @@
                 // enter your logic for when there is an error (ex. error toast)
                 console.log(error)
                 enableUI()
-                document.getElementById('audioData').innerHTML ='<p style="color: red">Failed to process</p>'
-            })
+                document.getElementById('audioData').innerHTML = '<p style="color: red">Failed to process</p>'
+            }).finally(() => {
+            document.getElementById('timer').innerHTML = 'Approx <b>' + ((Date.now() - startTime) / 1000) + ' Seconds</b> taken to process this call.'
+        })
     });
 </script>
 </html>
