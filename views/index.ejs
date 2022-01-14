@@ -1211,7 +1211,7 @@
             function punctuateText(textToPunctuate) {
                 let formData = new FormData();
                 formData.append("text", textToPunctuate);
-                formData.append("enableITN", true);
+                formData.append("enabledItn", true);
                 $.ajax({
                     type: 'POST',
                     url: `/v1/punctuate/${current_lang}`,

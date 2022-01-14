@@ -72,11 +72,11 @@ function setApiRoutes(app) {
 
     app.post("/v1/punctuate/:language", async (req, res) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
-        const { text, enableITN } = req.body;
+        const { text, enabledItn } = req.body;
         let language = req.params.language;
         try{
             const baseUrl = 'https://meity-dev-asr.ulcacontrib.org';
-            const requestBody = { "text": text, "enableITN": enableITN === true ? true : false  };
+            const requestBody = { "text": text, "enabledItn": enabledItn === true ? true : false  };
             const resp = await axios.post(`${baseUrl}/asr/v1/punctuate/${language}`, requestBody);
             res.json({ "data": resp.data });
         } catch(err){
@@ -86,11 +86,10 @@ function setApiRoutes(app) {
     })
 
     app.post("/punctuate", async (req, res) => {
-        res.setHeader('Access-Control-Allow-Origin', '*');
         const { text, language } = req.body;
         try{
             const baseUrl = 'https://meity-dev-asr.ulcacontrib.org';
-            const requestBody = { "text": text, "enableITN": true  };
+            const requestBody = { "text": text, "enabledItn": true  };
             const resp = await axios.post(`${baseUrl}/asr/v1/punctuate/${language}`, requestBody);
             res.json({ "data": resp.data });
         } catch(err){
@@ -100,9 +99,8 @@ function setApiRoutes(app) {
     })
 
     app.post("/tts/infer", async (req, res) => {
-        // res.setHeader('Access-Control-Allow-Origin', '*');
         try{
-            const baseUrl = 'http://34.121.100.224:5000/TTS/';
+            const baseUrl = 'http://34.121.100.224:5001/TTS/';
             const resp = await axios.post(`${baseUrl}`, req.body);
             res.json(resp.data);
         } catch(err){
