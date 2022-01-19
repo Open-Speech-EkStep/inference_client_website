@@ -131,16 +131,20 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                "text": inputText,
-                "gender": gender,
-                "lang": language
+                "input": [{"source": inputText}],
+                "config": {
+                    "gender": gender,
+                    "language": {
+                        "sourceLanguage": language
+                    }
+                }
             })
         })
             .then(res => res.json())
             .then(data => {
                 // enter you logic when the fetch is successful
                 console.log(data)
-                var audio = 'data:audio/wav;' + data.encoding + ',' + data.data;
+                var audio = 'data:audio/wav;' + data.config.encoding + ',' + data.audio[0].audioContent;
                 document.getElementById('audioData').innerHTML =
                     '<audio controls><source id="audioData" src="' + audio + '"/></audio>'
                 enableUI()
