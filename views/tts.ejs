@@ -69,6 +69,9 @@
 
                     <select id="language" style="width: 200px;font-size: 23px;float: left;margin-left: 153px;">
                         <option value="hi">Hindi</option>
+                        <option value="ta">Tamil</option>
+                        <option value="ml">Malayalam</option>
+                        <option value="kn">Kannada</option>
                     </select>
                 </div>
             </div>
@@ -99,6 +102,18 @@
 </center>
 </body>
 <script>
+    langDefaults = {
+        hi: 'भारत मेरा देश है और मुझे भारतीय होने पर गर्व है।',
+        ta: 'இந்தியா எனது நாடு, நான் இந்தியனாக இருப்பதில் பெருமை கொள்கிறேன்.',
+        ml: 'ഇന്ത്യ എന്റെ രാജ്യമാണ്, ഒരു ഇന്ത്യക്കാരനായതിൽ ഞാൻ അഭിമാനിക്കുന്നു.',
+        kn: 'ಭಾರತ ನನ್ನ ದೇಶ ಮತ್ತು ನಾನು ಭಾರತೀಯನಾಗಿರುವುದಕ್ಕೆ ಹೆಮ್ಮೆಪಡುತ್ತೇನೆ.',
+    }
+
+    $("#language").on('change', () => {
+        const language = $('#language').val();
+        console.log('Lang', language, langDefaults[language]);
+        $('#inputText').val(langDefaults[language]);
+    })
 
     function disableUI() {
         $("#inputText").attr("disabled", "disabled");
