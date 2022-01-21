@@ -1209,36 +1209,63 @@
             }
 
             function punctuateText(textToPunctuate) {
-                let formData = new FormData();
-                formData.append("text", textToPunctuate);
-                formData.append("enabledItn", true);
-                $.ajax({
-                    type: 'POST',
-                    url: `/v1/punctuate/${current_lang}`,
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    crossDomain: true,
-                    beforeSend: function () {
-                        // Show image container
-                        $('#output-loader-icon').show();
-                    },
-                    success: function (response, textStatus, jqXHR) {
-                        const resp = response["data"];
-                        if (ENABLE_LOGS === true)
-                            console.log(resp['text']);
-                        $('#output-loader-icon').hide();
-                        if (resp['text'] !== null && resp['text'] !== undefined && resp['text'] !== 'null') {
-                            document.getElementById('output').textContent = resp["text"];
-                            transcription_text = resp["text"];
-                        }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        alert('Failed: ' + textStatus);
-                        $('#output-loader-icon').hide();
-                    }
+                let url = `https://meity-dev-asr.ulcacontrib.org/asr/v1/punctuate/${current_lang}`;
 
-                });
+                $('#output-loader-icon').show();
+
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        'text': textToPunctuate,
+                        'enabledItn': true
+                    }),
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                }).then(response=>response.json()).then(resp=>{
+                    if (ENABLE_LOGS === true)
+                        console.log(resp['text']);
+                    $('#output-loader-icon').hide();
+                    if (resp['text'] !== null && resp['text'] !== undefined && resp['text'] !== 'null') {
+                        document.getElementById('output').textContent = resp["text"];
+                        transcription_text = resp["text"];
+                    }
+                }).catch(err=>{
+                    alert('Failed: ' + err);
+                    $('#output-loader-icon').hide();
+                })
+
+                // let formData = new FormData();
+                // formData.append("text", textToPunctuate);
+                // formData.append("enabledItn", true);
+                
+                // $.ajax({
+                //     type: 'POST',
+                //     url: url,
+                //     data: formData,
+                //     contentType: false,
+                //     processData: false,
+                //     crossDomain: true,
+                //     beforeSend: function () {
+                //         // Show image container
+                //         $('#output-loader-icon').show();
+                //     },
+                //     success: function (response, textStatus, jqXHR) {
+                //         const resp = response["data"];
+                //         if (ENABLE_LOGS === true)
+                //             console.log(resp['text']);
+                //         $('#output-loader-icon').hide();
+                //         if (resp['text'] !== null && resp['text'] !== undefined && resp['text'] !== 'null') {
+                //             document.getElementById('output').textContent = resp["text"];
+                //             transcription_text = resp["text"];
+                //         }
+                //     },
+                //     error: function (jqXHR, textStatus, errorThrown) {
+                //         alert('Failed: ' + textStatus);
+                //         $('#output-loader-icon').hide();
+                //     }
+
+                // });
             }
         </script>
         <script>
