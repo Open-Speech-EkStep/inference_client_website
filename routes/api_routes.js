@@ -100,7 +100,7 @@ function setApiRoutes(app) {
 
     app.post("/tts/infer", async (req, res) => {
         try{
-            const baseUrl = 'http://34.121.100.224:5001/TTS/';
+            const baseUrl = 'http://34.121.100.224:5001/';
             const resp = await axios.post(`${baseUrl}`, req.body);
             res.json(resp.data);
         } catch(err){
