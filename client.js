@@ -2,7 +2,7 @@
 require('dotenv').config();
 
 const path = require("path");
-const cors = require("cors");
+ const cors = require("cors");
 
 var express = require("express");
 const app = express();
@@ -19,9 +19,8 @@ app.set('view engine', 'ejs');
 const corsOptions = {
     origin: "*"
 }
-app.use(cors(corsOptions));
 
-// setProxy(server);
+app.use(cors(corsOptions));
 
 setRouter(app)
 

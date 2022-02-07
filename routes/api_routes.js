@@ -4,6 +4,7 @@ const GrpcClient = require('./../proxy/grpc_client');
 const fs = require("fs");
 const multer = require('multer');
 const axios = require('axios');
+const { dirname } = require('path');
 
 function setApiRoutes(app) {
 
@@ -32,7 +33,7 @@ function setApiRoutes(app) {
     app.use(upload.single('audio_data'));
 
     app.post("/alt/asr/:language", async function (req, res) {
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        // res.setHeader('Access-Control-Allow-Origin', '*');
         const language = req.params.language;
         try {
             const resp = await axios.post("https://meity-dev-asr.ulcacontrib.org/asr/v1/recognize/" + language, req.body);
@@ -43,18 +44,20 @@ function setApiRoutes(app) {
         }
     });
 
+    app.get("/audio_files/:file_name", function (req, res){
+        res.sendFile(dirname(require.main.filename)+`/uploads/${req.params.file_name}`);
+    })
+
     app.post("/batch-service", async function (req, res) {
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        // res.setHeader('Access-Control-Allow-Origin', '*');
         const file = req.file;
         const { language } = req.body;
-        let data = fs.readFileSync(file.path);
-        let dataBase64 = data.toString('base64');
+        const file_name = file.filename;
         const requestBody = {};
-        // requestBody["config"] = { "transcriptionFormat": { "value": "srt" }, audioFormat: "wav" }
-        requestBody["audio"] = [{ "audioContent": dataBase64 }]
+        requestBody["config"] = { "transcriptionFormat": { "value": "transcript" }, audioFormat: "wav" }
+        requestBody["audio"] = [{ "audioUri": `https://inference.vakyansh.in/audio_files/${file_name}` }]
         try {
             const resp = await axios.post("https://meity-dev-asr.ulcacontrib.org/asr/v1/recognize/" + language, requestBody);
-            console.log(resp.data);
             res.json({ "data": {"srt" : resp.data["output"][0]["source"] } });
         } catch (err) {
             console.log(err);
@@ -71,12 +74,14 @@ function setApiRoutes(app) {
     });
 
     app.post("/v1/punctuate/:language", async (req, res) => {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        const { text, enableITN } = req.body;
+        // res.setHeader('Access-Control-Allow-Origin', '*');
+	console.log('Request is ', req);
+        const { text, enabledItn } = req.body;
         let language = req.params.language;
         try{
             const baseUrl = 'https://meity-dev-asr.ulcacontrib.org';
-            const requestBody = { "text": text, "enableITN": enableITN === true ? true : false  };
+            const requestBody = { "text": text, "enabledItn": true };
+
             const resp = await axios.post(`${baseUrl}/asr/v1/punctuate/${language}`, requestBody);
             res.json({ "data": resp.data });
         } catch(err){
@@ -86,12 +91,14 @@ function setApiRoutes(app) {
     })
 
     app.post("/punctuate", async (req, res) => {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        const { text, language } = req.body;
+        // res.setHeader('Access-Control-Allow-Origin', 'localhost');
+        console.log('log', req);
+	   const { text, language } = req.body;
         try{
             const baseUrl = 'https://meity-dev-asr.ulcacontrib.org';
-            const requestBody = { "text": text, "enableITN": true  };
+            const requestBody = { "text": text, "enabledItn": true  };
             const resp = await axios.post(`${baseUrl}/asr/v1/punctuate/${language}`, requestBody);
+            // console.log(res);
             res.json({ "data": resp.data });
         } catch(err){
             console.log(err)
@@ -99,6 +106,16 @@ function setApiRoutes(app) {
         }
     })
 
+	app.post("/tts/infer", async (req, res) => {
+        try{
+            const baseUrl = 'http://34.121.100.224:5000/';
+            const resp = await axios.post(`${baseUrl}`, req.body);
+            res.json(resp.data);
+        } catch(err){
+            console.log(err)
+            res.sendStatus(500);
+        }
+    })
     app.post("/api/feedback", function (req, res) {
         const file = req.file;
         const { user_id, language, text, rating, feedback, device, browser, date } = req.body;

@@ -633,9 +633,9 @@
                     console.log("disconnected");
             })
             socket.on('terminate', function () {
-                console.log("terminate called")
+                // console.log("terminate called")
                 if (socket !== null && socket.connected) {
-                    console.log("END socket called")
+                    // console.log("END socket called")
                     endSocket();
                     if(ENABLE_LOGS === true)
                         console.log("end socket called");
@@ -695,6 +695,10 @@
             selected_lang = current_lang;
             audioData = [];
             recordingLength = 0;
+            transcription_text = "";
+            transcription_language = "";
+            recordedBlob = null;
+            recordedBlobDuration = 0;
             enableAutoMicClose(stopRecording);
         }
 
@@ -1000,76 +1004,93 @@
             });
         }
 
-        function uploadFileToBatchService() {
-            let files = document.querySelector('#audio_file_input').files;
-            let blob = files[0];
-            //let language = 'hi';
-            let formData = new FormData();
-            formData.append("audio_data", blob);
-            formData.append("language", current_lang);
-            formData.append("user", "");
-            let filename = blob.name;
-            $.ajax({
-                type: 'POST',
-                url: `/batch-service`,
-                data: formData,
-                contentType: false,
-                processData: false,
-                crossDomain: true,
-                beforeSend: function () {
-                    // Show image container
-                    $('#file-loader').show();
-                },
-                success: function (response, textStatus, jqXHR) {
-                    const resp = response["data"];
-                    let a = document.createElement('a');
-                    let bl = new Blob([resp["srt"]], {'type': 'text/plain'});
-                    let url = window.URL.createObjectURL(bl);
-                    a.href = url;
-                    filename = filename.slice(0, filename.length - 4);
-                    a.download = filename+'.srt';
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    $('#file-loader').hide();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    alert('Failed: ' + textStatus);
-                    $('#file-loader').hide();
-                }
+        function blobToData(blob){
+            return new Promise((resolve) => {
+                const reader = new FileReader()
+                reader.onloadend = () => resolve(reader.result)
+                reader.readAsDataURL(blob)
+            })
+        }
 
-            });
+        async function uploadFileToBatchService() {
+            function onSuccess(resp){
+                const srtString = resp["output"][0]["source"];
+                // const resp = response["data"];
+                let a = document.createElement('a');
+                let bl = new Blob([srtString], { 'type': 'text/plain' });
+                let url = window.URL.createObjectURL(bl);
+                a.href = url;
+                filename = filename.slice(0, filename.length - 4);
+                a.download = filename + '.srt';
+                a.click();
+                window.URL.revokeObjectURL(url);
+                $('#file-loader').hide();
+            }
+            function onError(err){
+                alert('Failed: ' + err["status"]);
+                $('#file-loader').hide();
+            }
+            let files = document.querySelector('#audio_file_input').files;
+            
+            let blob = files[0];
+            let filename = blob.name;
+
+            let base64String = await blobToData(blob);
+            base64String = base64String.substr(base64String.indexOf('base64,') + 7);
+            $('#file-loader').show();
+            let url = `https://meity-dev-asr.ulcacontrib.org/asr/v1/recognize/${current_lang}`;
+            fetch(url, {
+                method: 'POST',
+                body: JSON.stringify({
+                    'config': {
+                        'audioFormat': 'wav',
+                        'transcriptionFormat': {'value': 'srt'}
+                    },
+                    'audio': [
+                        {
+                            "audioContent": base64String
+                        }
+                    ]
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            }).then(async response=>{
+                let resp = await response.json();
+                if(response.ok)
+                {
+                    return resp;         
+                }
+                throw new Error(resp);
+            }).then(onSuccess).catch(onError)
         }
 
         function punctuateText(textToPunctuate) {
-            let formData = new FormData();
-            formData.append("text", textToPunctuate);
-            formData.append("enableITN", true);
-            $.ajax({
-                type: 'POST',
-                url: `/v1/punctuate/${current_lang}`,
-                data: formData,
-                contentType: false,
-                processData: false,
-                crossDomain: true,
-                beforeSend: function () {
-                    // Show image container
-                    $('#output-loader-icon').show();
-                },
-                success: function (response, textStatus, jqXHR) {
-                    const resp = response["data"];
-                    if(ENABLE_LOGS === true)
-                        console.log(resp['text']);
-                    $('#output-loader-icon').hide();
-                    if (resp['text'] !== null && resp['text'] !== undefined && resp['text'] !== 'null') {
-                        document.getElementById('output').textContent = resp["text"];
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    alert('Failed: ' + textStatus);
-                    $('#output-loader-icon').hide();
-                }
+            let url = `https://meity-dev-asr.ulcacontrib.org/asr/v1/punctuate/${current_lang}`;
+            $('#output-loader-icon').show();
 
-            });
+            fetch(url, {
+                method: 'POST',
+                body: JSON.stringify({
+                    'text': textToPunctuate,
+                    'enabledItn': true
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            }).then(response=>response.json()).then(resp=>{
+                if (ENABLE_LOGS === true)
+                    console.log(resp['text']);
+                $('#output-loader-icon').hide();
+                if (resp['text'] !== null && resp['text'] !== undefined && resp['text'] !== 'null') {
+                    document.getElementById('output').textContent = resp["text"];
+                    transcription_text = resp["text"];
+                }
+            }).catch(err=>{
+                alert('Failed: ' + err);
+                $('#output-loader-icon').hide();
+            })
+
         }
     </script>
     <script>
