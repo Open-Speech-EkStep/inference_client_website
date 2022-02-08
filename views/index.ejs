@@ -476,7 +476,7 @@
                             <p class="disclaimer">Max size: 3mb (If more, the request will fail.)</p>
                         </center>
                         <div class="custom-file mb-3">
-                            <input type="file" accept=".wav,.mp3,.mp4,.ogg,.m4a" class="custom-file-input"
+                            <input type="file" accept=".wav,.mp3" class="custom-file-input"
                                 id="audio_file_input" onchange="updateLabel()">
                             <label class="custom-file-label" for="customFile" id="file_upload_label">Upload
                                 File</label>
@@ -1197,17 +1197,18 @@
                 
                 let blob = files[0];
                 let filename = blob.name;
+                let filetype = filename.split('.').pop();
 
                 let base64String = await blobToData(blob);
                 base64String = base64String.substr(base64String.indexOf('base64,') + 7);
-                console.log(base64String);
+                
                 $('#file-loader').show();
                 let url = `https://meity-dev-asr.ulcacontrib.org/asr/v1/recognize/${current_lang}`;
                 fetch(url, {
                     method: 'POST',
                     body: JSON.stringify({
                         'config': {
-                            'audioFormat': 'wav',
+                            'audioFormat': filetype,
                             'transcriptionFormat': {'value': 'srt'}
                         },
                         'audio': [
