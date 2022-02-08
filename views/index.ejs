@@ -305,7 +305,7 @@
                 <div class="col-sm-12">
                     <center>
                         <strong class="disclaimer">Note:</strong>
-                        <p class="disclaimer">Max duration: 15 mins (If more, transcript of first 15 mins only will be given)</p>
+                        <p class="disclaimer">Max size: 3mb (If more, the request will fail.)</p>
                     </center>
                     <div class="custom-file mb-3">
                         <input type="file" accept=".wav,.mp3,.mp4,.ogg,.m4a" class="custom-file-input"
@@ -313,7 +313,7 @@
                         <label class="custom-file-label" for="customFile" id="file_upload_label">Upload
                             File</label>
                     </div>
-                    <p id="file-error" style="display: none; color: red;">Chosen File size is greater than 3.5 MB</p>
+                    <p id="file-error" style="display: none; color: red;">Chosen File size is greater than 3 MB</p>
                     <audio id="audio" controls style="display:none;">
                         <source src="" id="audio_source" />
                     </audio>
@@ -899,11 +899,11 @@
             let theSplit = chosenFile.split('\\');
             chosenFile = theSplit[theSplit.length - 1];
             document.getElementById('file_upload_label').innerHTML = chosenFile;
-            // if (file.size > 3500000) {
-            //     $('#file-error').show();
-            //     $('#run-model-btn').prop('disabled', true);
-            //     return;
-            // }
+            if (file.size > 3000000) {
+                $('#file-error').show();
+                $('#run-model-btn').prop('disabled', true);
+                return;
+            }
             // let fileNameSplit = file.name.split(".");
             // if()
             if(ENABLE_LOGS === true)
