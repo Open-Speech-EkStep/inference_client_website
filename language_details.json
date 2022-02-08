@@ -18,5 +18,6 @@
     {"id": "bhojpuri", "code": "bho", "name": "Bhojpuri"},
     {"id": "rajasthani", "code": "raj", "name": "Rajasthani"},
     {"id": "malayalam", "code": "ml", "name": "Malayalam"},
-    {"id": "assamese", "code": "as", "name": "Assamese"}
+    {"id": "assamese", "code": "as", "name": "Assamese"},
+    {"id": "hinglish", "code": "hi_en", "name": "Hinglish"}
 ]

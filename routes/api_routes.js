@@ -76,7 +76,7 @@ function setApiRoutes(app) {
         let language = req.params.language;
         try{
             const baseUrl = 'https://meity-dev-asr.ulcacontrib.org';
-            const requestBody = { "text": text, "enabledItn": enabledItn === true ? true : false  };
+            const requestBody = { "text": text, "enabledItn": true  };
             const resp = await axios.post(`${baseUrl}/asr/v1/punctuate/${language}`, requestBody);
             res.json({ "data": resp.data });
         } catch(err){
@@ -89,7 +89,7 @@ function setApiRoutes(app) {
         const { text, language } = req.body;
         try{
             const baseUrl = 'https://meity-dev-asr.ulcacontrib.org';
-            const requestBody = { "text": text, "enabledItn": true  };
+            const requestBody = { "text": text, "enabledITN": true  };
             const resp = await axios.post(`${baseUrl}/asr/v1/punctuate/${language}`, requestBody);
             res.json({ "data": resp.data });
         } catch(err){
