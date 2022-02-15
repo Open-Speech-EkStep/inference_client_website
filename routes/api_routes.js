@@ -98,9 +98,11 @@ function setApiRoutes(app) {
         }
     })
 
-    app.post("/tts/infer", async (req, res) => {
+    app.post("/tts/infer/:language", async (req, res) => {
         try{
-            const baseUrl = 'http://34.121.100.224:5001/';
+            let language = req.params.language;
+            const baseUrl = 'https://cdac.ulcacontrib.org/tts/v1/' + language;
+            console.log(baseUrl)
             const resp = await axios.post(`${baseUrl}`, req.body);
             res.json(resp.data);
         } catch(err){
