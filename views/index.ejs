@@ -790,7 +790,7 @@
             }
 
             function connectSocket(startMic) {
-                socket = io(openAPIProxyURL, { autoConnect: false, query: `language=${current_lang}` });
+                socket = io(openAPIProxyURL, { autoConnect: false, query: `language=${current_lang}`, transports: [ "websocket" ] });
                 socket.connect();
                 socket.on('connect', function () {
                     userId = socket.id;
