@@ -44,10 +44,6 @@ function setApiRoutes(app) {
         }
     });
 
-    app.get("/audio_files/:file_name", function (req, res){
-        res.sendFile(dirname(require.main.filename)+`/uploads/${req.params.file_name}`);
-    })
-
     app.post("/batch-service", async function (req, res) {
         // res.setHeader('Access-Control-Allow-Origin', '*');
         const file = req.file;
@@ -75,30 +71,12 @@ function setApiRoutes(app) {
 
     app.post("/v1/punctuate/:language", async (req, res) => {
         // res.setHeader('Access-Control-Allow-Origin', '*');
-	console.log('Request is ', req);
         const { text, enabledItn } = req.body;
         let language = req.params.language;
         try{
             const baseUrl = 'https://meity-dev-asr.ulcacontrib.org';
-            const requestBody = { "text": text, "enabledItn": true };
-
+            const requestBody = { "text": text, "enabledItn": enabledItn  };
             const resp = await axios.post(`${baseUrl}/asr/v1/punctuate/${language}`, requestBody);
-            res.json({ "data": resp.data });
-        } catch(err){
-            console.log(err)
-            res.sendStatus(500);
-        }
-    })
-
-    app.post("/punctuate", async (req, res) => {
-        // res.setHeader('Access-Control-Allow-Origin', 'localhost');
-        console.log('log', req);
-	   const { text, language } = req.body;
-        try{
-            const baseUrl = 'https://meity-dev-asr.ulcacontrib.org';
-            const requestBody = { "text": text, "enabledItn": true  };
-            const resp = await axios.post(`${baseUrl}/asr/v1/punctuate/${language}`, requestBody);
-            // console.log(res);
             res.json({ "data": resp.data });
         } catch(err){
             console.log(err)

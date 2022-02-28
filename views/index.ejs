@@ -1067,7 +1067,7 @@
         }
 
         function punctuateText(textToPunctuate) {
-            let url = `https://meity-dev-asr.ulcacontrib.org/asr/v1/punctuate/${current_lang}`;
+            let url = `/v1/punctuate/${current_lang}`;
             $('#output-loader-icon').show();
 
             fetch(url, {
