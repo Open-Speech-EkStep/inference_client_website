@@ -84,7 +84,9 @@ function setApiRoutes(app) {
         }
     })
 
-	app.post("/tts/infer", async (req, res) => {
+
+
+    app.post("/tts/infer", async (req, res) => {
         try{
             const baseUrl = 'http://34.121.100.224:5000/';
             const resp = await axios.post(`${baseUrl}`, req.body);
@@ -94,7 +96,7 @@ function setApiRoutes(app) {
             res.sendStatus(500);
         }
     })
-    app.post("/api/feedback", function (req, res) {
+     app.post("/api/feedback", function (req, res) {
         const file = req.file;
         const { user_id, language, text, rating, feedback, device, browser, date } = req.body;
 
