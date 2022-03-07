@@ -76,6 +76,8 @@
                         <option value="te">Telugu</option>
                         <option value="or">Odia</option>
                         <option value="bn">Bengali</option>
+                        <option value="en">English</option>
+			<option value="mr">Marathi</option>
                     </select>
                 </div>
             </div>
@@ -115,6 +117,8 @@
         or: 'ଭାରତ ମୋର ଦେଶ ଏବଂ ମୁଁ ଜଣେ ଭାରତୀୟ ହୋଇଥିବାରୁ ଗର୍ବିତ |',
         te: 'భారతదేశం నా దేశం మరియు నేను భారతీయుడిగా గర్వపడుతున్నాను.',
         bn: 'ভারত আমার দেশ এবং আমি একজন ভারতীয় হিসেবে গর্বিত।',
+        en: 'India is my country and I am proud to be an Indian.',
+	mr: 'भारत माझा देश आहे आणि मला भारतीय असल्याचा अभिमान आहे.'
     }
 
     $("#language").on('change', () => {
@@ -146,7 +150,7 @@
 
         const startTime = Date.now();
 
-        fetch('/tts/infer', {
+        fetch('/tts/infer/', {
             // mode: 'no-cors',
             method: 'POST',
             headers: {

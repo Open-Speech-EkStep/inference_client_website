@@ -77,7 +77,7 @@ function setApiRoutes(app) {
             const baseUrl = 'https://meity-dev-asr.ulcacontrib.org';
             const requestBody = { "text": text, "enabledItn": enabledItn  };
             const resp = await axios.post(`${baseUrl}/asr/v1/punctuate/${language}`, requestBody);
-            res.json({ "data": resp.data });
+            res.json(resp.data);
         } catch(err){
             console.log(err)
             res.sendStatus(500);
