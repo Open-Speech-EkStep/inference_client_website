@@ -1,10 +1,8 @@
 const { addFeedback, getFeedback } = require('./../dbOperations');
 const { uploadFile } = require('./../uploader');
-const GrpcClient = require('./../proxy/grpc_client');
 const fs = require("fs");
 const multer = require('multer');
 const axios = require('axios');
-const { dirname } = require('path');
 
 function setApiRoutes(app) {
 
@@ -35,8 +33,10 @@ function setApiRoutes(app) {
     app.post("/alt/asr/:language", async function (req, res) {
         // res.setHeader('Access-Control-Allow-Origin', '*');
         const language = req.params.language;
+        const baseUrl = process.env.ASR_BASE_URL;
+        const asrUrl = `${baseUrl}/asr/v1/recognize/${language}`;
         try {
-            const resp = await axios.post("https://meity-dev-asr.ulcacontrib.org/asr/v1/recognize/" + language, req.body);
+            const resp = await axios.post(asrUrl, req.body);
             res.json(resp.data);
         } catch (err) {
             console.log(err);
@@ -44,39 +44,15 @@ function setApiRoutes(app) {
         }
     });
 
-    app.post("/batch-service", async function (req, res) {
-        // res.setHeader('Access-Control-Allow-Origin', '*');
-        const file = req.file;
-        const { language } = req.body;
-        const file_name = file.filename;
-        const requestBody = {};
-        requestBody["config"] = { "transcriptionFormat": { "value": "transcript" }, audioFormat: "wav" }
-        requestBody["audio"] = [{ "audioUri": `https://inference.vakyansh.in/audio_files/${file_name}` }]
-        try {
-            const resp = await axios.post("https://meity-dev-asr.ulcacontrib.org/asr/v1/recognize/" + language, requestBody);
-            res.json({ "data": {"srt" : resp.data["output"][0]["source"] } });
-        } catch (err) {
-            console.log(err);
-            res.sendStatus(500);
-        }
-        fs.unlink(file.path, function (err) {
-            if (err) {
-                console.log(`File ${file.path} not deleted!`);
-                console.log(err);
-            } else {
-                console.log(`File ${file.path} deleted!`)
-            }
-        });
-    });
-
     app.post("/v1/punctuate/:language", async (req, res) => {
         // res.setHeader('Access-Control-Allow-Origin', '*');
         const { text, enabledItn } = req.body;
         let language = req.params.language;
         try{
-            const baseUrl = 'https://meity-dev-asr.ulcacontrib.org';
+            const baseUrl = process.env.PUNCTUATION_BASE_URL;
+            const punctuateUrl = `${baseUrl}/asr/v1/punctuate/${language}`
             const requestBody = { "text": text, "enabledItn": enabledItn  };
-            const resp = await axios.post(`${baseUrl}/asr/v1/punctuate/${language}`, requestBody);
+            const resp = await axios.post(punctuateUrl, requestBody);
             res.json(resp.data);
         } catch(err){
             console.log(err)
@@ -88,7 +64,7 @@ function setApiRoutes(app) {
 
     app.post("/tts/infer", async (req, res) => {
         try{
-            const baseUrl = 'http://34.121.100.224:5000/';
+            const baseUrl = process.env.TTS_BASE_URL;
             const resp = await axios.post(`${baseUrl}`, req.body);
             res.json(resp.data);
         } catch(err){

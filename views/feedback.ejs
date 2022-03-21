@@ -214,7 +214,7 @@
             const resultElement = selectedRow.node().getElementsByClassName('result')[0]
             const loader = $(selectedRow.node().getElementsByClassName('loader')[0])
 
-            console.log(loader)
+            // console.log(loader)
             let data = selectedRow.data();
             let audio_path = data['audio_path'];
             let language = data['language'];
@@ -222,7 +222,7 @@
             formData.append('audio_path', audio_path);
             $.ajax({
                 type: 'POST',
-                url: 'https://inference.vakyansh.in/model-service/transcribe_gcp?lang=' + language,
+                url: '/alt/asr/' + language,
                 data: formData,
                 contentType: false,
                 processData: false,
