@@ -1,6 +1,5 @@
 const { addFeedback, getFeedback, getUserDetails } = require('./../dbOperations');
 const { uploadFile } = require('./../uploader');
-const GrpcClient = require('./../proxy/grpc_client');
 const fs = require("fs");
 const multer = require('multer');
 const axios = require('axios');
@@ -34,8 +33,9 @@ function setApiRoutes(app) {
     app.post("/alt/asr/:language", async function (req, res) {
         // res.setHeader('Access-Control-Allow-Origin', '*');
         const language = req.params.language;
+        const baseUrl = process.env.ASR_BASE_URL;
         try {
-            const resp = await axios.post("https://meity-dev-asr.ulcacontrib.org/asr/v1/recognize/" + language, req.body);
+            const resp = await axios.post(`${baseUrl}/asr/v1/recognize/${language}`, req.body);
             res.json(resp.data);
         } catch (err) {
             console.log(err);
@@ -43,42 +43,15 @@ function setApiRoutes(app) {
         }
     });
 
-    app.post("/batch-service", async function (req, res) {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        const file = req.file;
-        const { language } = req.body;
-        let data = fs.readFileSync(file.path);
-        let dataBase64 = data.toString('base64');
-        const requestBody = {};
-        // requestBody["config"] = { "transcriptionFormat": { "value": "srt" }, audioFormat: "wav" }
-        requestBody["audio"] = [{ "audioContent": dataBase64 }]
-        try {
-            const resp = await axios.post("https://meity-dev-asr.ulcacontrib.org/asr/v1/recognize/" + language, requestBody);
-            console.log(resp.data);
-            res.json({ "data": {"srt" : resp.data["output"][0]["source"] } });
-        } catch (err) {
-            console.log(err);
-            res.sendStatus(500);
-        }
-        fs.unlink(file.path, function (err) {
-            if (err) {
-                console.log(`File ${file.path} not deleted!`);
-                console.log(err);
-            } else {
-                console.log(`File ${file.path} deleted!`)
-            }
-        });
-    });
-
     app.post("/v1/punctuate/:language", async (req, res) => {
         // res.setHeader('Access-Control-Allow-Origin', '*');
         const { text, enabledItn } = req.body;
         let language = req.params.language;
         try{
-            const baseUrl = 'https://meity-dev-asr.ulcacontrib.org';
+            const baseUrl = process.env.PUNCTUATION_BASE_URL;
             const requestBody = { "text": text, "enabledItn": enabledItn  };
             const resp = await axios.post(`${baseUrl}/asr/v1/punctuate/${language}`, requestBody);
-            res.json({ "data": resp.data });
+            res.json(resp.data);
         } catch(err){
             console.log(err)
             res.sendStatus(500);
@@ -88,7 +61,7 @@ function setApiRoutes(app) {
     app.post("/tts/infer/:language", async (req, res) => {
         try{
             let language = req.params.language;
-            const baseUrl = 'https://cdac.ulcacontrib.org/tts/v1/' + language;
+            const baseUrl = `${TTS_BASE_URL}/tts/v1/${language}`;
             console.log(baseUrl)
             const resp = await axios.post(`${baseUrl}`, req.body);
             res.json(resp.data);

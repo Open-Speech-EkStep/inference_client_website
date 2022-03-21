@@ -537,6 +537,7 @@
             let ENABLE_LOGS = false;
             let languagesMap = JSON.parse(`<%- JSON.stringify(languages_map) %>`);
             let openAPIProxyURL = `<%- open_api_proxy_url %>`;
+            let ASR_BASE_URL = `<%- ASR_BASE_URL %>`;
             let socket, socket_close_timeout = null, fileSocket, micSocketIO, fileSocketIO;
             let current_lang = 'en', selected_lang = 'en';
             let bufferSize = 16384;
@@ -1203,7 +1204,7 @@
                 base64String = base64String.substr(base64String.indexOf('base64,') + 7);
                 
                 $('#file-loader').show();
-                let url = `https://meity-dev-asr.ulcacontrib.org/asr/v1/recognize/${current_lang}`;
+                let url = `${ASR_BASE_URL}/asr/v1/recognize/${current_lang}`;
                 fetch(url, {
                     method: 'POST',
                     body: JSON.stringify({

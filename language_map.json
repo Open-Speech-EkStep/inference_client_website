@@ -1,5 +1,5 @@
 {
-    "35.192.29.24:55102": {"languages":[
+    "<ip/hostname1>:<port>": {"languages":[
         "ta",
         "bho",
         "bn",
@@ -7,24 +7,7 @@
         "ne",
         "kn"
     ], "maxConnectionCount": 50},
-    "35.232.162.125:55102": {"languages":[
-        "raj",
-        "ml",
-        "or",
-        "sa",
-        "mai",
-        "ur",
-        "as",
-        "doi"
-    ], "maxConnectionCount": 50},
-    "34.72.59.101:55102": {"languages":[
-	    "gu",
-	    "te",
-	    "mr",
-	    "pa",
-	    "en-test"
-    ], "maxConnectionCount": 50},
-    "35.225.39.113:55102": {"languages":[
+    "<ip/hostname2>:<port>": {"languages":[
 	    "hi",
 	    "en"
     ], "maxConnectionCount": 50}
